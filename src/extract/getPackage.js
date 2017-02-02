@@ -47,7 +47,7 @@ module.exports = function getPackage(options) {
 
       extract.on('finish', function (err) {
         if (err) {
-          return reject();
+          return reject(err);
         }
         resolve({
           data: data,

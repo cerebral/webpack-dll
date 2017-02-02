@@ -7,7 +7,7 @@ var utils = require('./utils');
 module.exports = {
   add: function (id, file, res) {
     if (!queue[id]) {
-      queue[id] = {'dll.js': [], 'bundle.json': [], bundle: null}
+      queue[id] = {'dll.js': [], 'manifest.json': [], bundle: null}
     }
 
     queue[id][file].push(res);
@@ -39,25 +39,21 @@ module.exports = {
   resolveBundle: function (id, bundle) {
     queue[id].bundle = bundle;
 
-    var requests = queue[id]['bundle.json'];
+    var requests = queue[id]['manifest.json'];
     var manifest = JSON.parse(memoryFs.fs.readFileSync(path.join('/', 'bundles', bundle.name, 'manifest.json')).toString());
-    var externals = utils.createExternals(manifest, bundle.entries)
 
     requests.forEach(function (res) {
-      res.send({
-        manifest: manifest,
-        externals: externals
-      });
+      res.send(manifest);
     });
 
-    queue[id]['bundle.json'] = [];
+    queue[id]['manifest.json'] = [];
   },
   reject: function (file, id, err) {
     var requests = queue[id][file];
 
     requests.forEach(function (res) {
       res.status(500).send({
-        message: err.message
+        message: err
       });
     })
 

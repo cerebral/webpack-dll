@@ -15,10 +15,10 @@ if (process.env.DEBUG) {
   app.delete('/dashboard/packages/:packageName', dashboard.deletePackage);
 
   app.get('/:packages/dll.js', dashboard.getDll);
-  app.get('/:packages/bundle.json', dashboard.getBundle);
+  app.get('/:packages/manifest.json', dashboard.getManifest);
 } else {
   app.get('/:packages/dll.js', extractAndBundle('dll.js'));
-  app.get('/:packages/bundle.json', extractAndBundle('bundle.json'));
+  app.get('/:packages/manifest.json', extractAndBundle('manifest.json'));
 }
 
 console.log('Running webpack-dll-service version: ', require('../package.json').version);

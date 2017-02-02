@@ -4,6 +4,7 @@ var utils = require('../utils');
 var merge = require('webpack-merge');
 var getVendors = require('./getVendors');
 var writeManifest = require('./writeManifest');
+var fs = require('fs')
 
 module.exports = function (options) {
   options = options || {};
@@ -11,6 +12,7 @@ module.exports = function (options) {
   return function (bundle) {
     return new Promise(function (resolve, reject) {
       var vendors = getVendors(bundle.entries, options);
+      fs.writeFileSync('entries.js', JSON.stringify(vendors, null, 2));
       var defaultWebpackConfig = {
         context: '/',
         entry: { vendors: vendors },
@@ -55,7 +57,7 @@ module.exports = function (options) {
         }
 
         var manifest = JSON.parse(options.targetFs.readFileSync(path.join('/', 'bundles', bundle.name, 'manifest.json')).toString());
-        writeManifest(manifest, bundle, options);
+        writeManifest(utils.cleanManifest(manifest), bundle, options);
 
         resolve(bundle);
       });

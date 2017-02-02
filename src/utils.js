@@ -1,5 +1,6 @@
 var hash = require('string-hash');
 var path = require('path');
+var findEntryPoints = require('./findEntryPoints');
 
 module.exports = {
   isProduction: function () {
@@ -36,16 +37,11 @@ module.exports = {
     }, {});
   },
   findEntryPoints: function (fs, entryKey, queuePath, baseEntry) {
-    console.log(queuePath, baseEntry);
-    var basePath = path.dirname(baseEntry.substr(2));
+    var filePath = path.join(queuePath, path.dirname(baseEntry.substr(2)));
 
-    return [basePath].reduce(function (allFiles, entryPath) {
-      return allFiles.concat(fs.readdirSync(path.join(queuePath, entryPath)).filter(function (file) {
-        return (path.extname(file) === '.js' || path.extname(file) === '.css') && file !== path.basename(baseEntry);
-      }).map(function (file) {
-        return path.join(entryPath.substr(13), file);
-      }));
-    }, []);
+    var entries = findEntryPoints(fs)(entryKey, filePath);
+    require('fs').writeFileSync('entries.js', JSON.stringify(entries, null, 2));
+    return entries;
   },
   getVendorsBundleName: function (packages) {
     if (!packages || Object.keys(packages).length === 0) {
@@ -64,30 +60,20 @@ module.exports = {
     console.log(err.message);
     console.log(err.stack);
   },
-  createExternals: function (manifest, entries) {
-    return Object.keys(entries).reduce(function (externals, packageName) {
-      return Object.keys(manifest.content).reduce(function (externals, manifestKey) {
-        var absolutePath = manifestKey.substr(1);
-
-        if (absolutePath.indexOf(packageName) === -1) {
-          return externals;
+  cleanManifest: function (manifest) {
+    return {
+      name: manifest.name,
+      content: Object.keys(manifest.content).reduce(function (currentManifest, key) {
+        if (
+          path.basename(key)[0] !== '_' &&
+          key.substr(0, 8) === './queues' &&
+          key.match(/node_modules/).length === 1
+        ) {
+          currentManifest[key] = manifest.content[key];
         }
 
-        var basePath = path.dirname(entries[packageName].path.substr(1));
-        var fileName = path.basename(absolutePath);
-        var extension = path.extname(fileName);
-        var replacer = new RegExp('\/' + fileName + '$');
-
-        if (entries[packageName].path.substr(1) === absolutePath) {
-          absolutePath = absolutePath.replace(replacer, '');
-        } else if (extension === '.js') {
-          absolutePath = absolutePath.replace(replacer, '/' + fileName.replace(extension, ''));
-        }
-        externals[absolutePath.replace(basePath, packageName)] = manifest.name + '(' + manifest.content[manifestKey] + ')';
-
-        return externals;
-      }, externals);
-
-    }, {});
+        return currentManifest;
+      }, {})
+    }
   }
 };

@@ -9,6 +9,8 @@ module.exports = function extractPackages (options) {
     .then(function (result) {
       var dependencies = utils.getUniqueDependencies(options.allPackages, result.dependencies);
 
+      options.allPackages = options.allPackages.concat(Object.keys(dependencies));
+
       return Promise.all(Object.keys(dependencies).map(function (key) {
         return extractPackages(Object.assign({}, options, {
           package: key,
