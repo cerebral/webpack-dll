@@ -11,7 +11,6 @@ module.exports = function (options) {
   return function (bundle) {
     return new Promise(function (resolve, reject) {
       var vendors = getVendors(bundle.entries, options);
-      console.log(vendors);
       var defaultWebpackConfig = {
         context: '/',
         entry: { vendors: vendors },

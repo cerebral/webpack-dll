@@ -1,0 +1,64 @@
+<html>
+  <head>
+    <style>
+      #wrapper {
+        display: flex;
+      }
+      #list {
+        flex: 1;
+      }
+      #bundle {
+        flex: 4;
+      }
+      #bundle-json {
+        width: 500px;
+        height: 500px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>DDL Dashboard</h1>
+    <div id="wrapper">
+      <ul id="list">
+
+      </ul>
+      <div id="bundle">
+        <textarea id="bundle-json">
+
+        </textarea>
+      </div>
+    </div>
+    <script
+      src="https://code.jquery.com/jquery-3.1.1.min.js"
+      integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+      crossorigin="anonymous"></script>
+    <script>
+      $.get('/dashboard/packages')
+        .then(function (packages) {
+          packages.forEach(function (package, index) {
+            var deleteItem = $('<button>delete</button>');
+            deleteItem.on('click', function (event) {
+              event.stopPropagation();
+
+              $.ajax({
+                url: `/dashboard/packages/${package}`,
+                type: 'DELETE'
+              })
+                .then(function (bundle) {
+                  $('#list').child(index).remove();
+                });
+            });
+
+            var packageItem = $(`<li>${package}</li>`);
+            packageItem.on('click', function () {
+              $.get(`/dashboard/packages/${package}`)
+                .then(function (bundle) {
+                  $('#bundle-json').html(JSON.stringify(bundle, null, 2))
+                });
+            });
+            $('#list').append(packageItem.append(deleteItem));
+          })
+        })
+    </script>
+  </body>
+</html>

@@ -5,6 +5,7 @@ module.exports = {
   isProduction: function () {
     return process.env.NODE_ENV === 'production';
   },
+
   convertPackagesParamToObject: function (params) {
     return params.split('+').reduce(function (currentPackages, package) {
       var packageArray = package.split('@');
@@ -35,6 +36,7 @@ module.exports = {
     }, {});
   },
   findEntryPoints: function (fs, entryKey, queuePath, baseEntry) {
+    console.log(queuePath, baseEntry);
     var basePath = path.dirname(baseEntry.substr(2));
 
     return [basePath].reduce(function (allFiles, entryPath) {
@@ -62,7 +64,7 @@ module.exports = {
     console.log(err.message);
     console.log(err.stack);
   },
-  createExternals (manifest, entries) {
+  createExternals: function (manifest, entries) {
     return Object.keys(entries).reduce(function (externals, packageName) {
       return Object.keys(manifest.content).reduce(function (externals, manifestKey) {
         var absolutePath = manifestKey.substr(1);
