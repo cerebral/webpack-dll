@@ -5,7 +5,7 @@ A service that converts a package into a DLL and manifest
 
 As an example you want to bundle `react@15.4.2` and `react-dom@15.4.2`.
 
-1. Grab the `bundle.json` from [https://cdn.com/dll/react@15.4.2+react-dom@15.4.2/bundle.json]()
+1. Grab the `bundle.json` from [https://[yourdomain]/react@15.4.2+react-dom@15.4.2/manifest.json]()
 2. The bundle contains the `manifest` and `externals`, used to configure your webpack setup
 
 ```js
@@ -34,7 +34,7 @@ module.exports = {
 
 ```html
 <body>
-  <script src="https://cdn.com/dll/react@15.4.2+react-dom@15.4.2/dll.js"></script>
+  <script src="https://[yourdomain]/react@15.4.2+react-dom@15.4.2/dll.js"></script>
 </body>
 ```
 
