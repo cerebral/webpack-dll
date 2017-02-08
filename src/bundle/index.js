@@ -12,6 +12,7 @@ module.exports = function (options) {
   return function (bundle) {
     return new Promise(function (resolve, reject) {
       var vendors = getVendors(bundle.entries, options);
+
       fs.writeFileSync('entries.js', JSON.stringify(vendors, null, 2));
       var defaultWebpackConfig = {
         context: '/',
@@ -57,7 +58,7 @@ module.exports = function (options) {
         }
 
         var manifest = JSON.parse(options.targetFs.readFileSync(path.join('/', 'bundles', bundle.name, 'manifest.json')).toString());
-        writeManifest(utils.cleanManifest(manifest), bundle, options);
+        writeManifest(utils.cleanManifest(manifest, bundle.entries), bundle, options);
 
         resolve(bundle);
       });

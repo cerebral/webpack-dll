@@ -60,7 +60,11 @@ module.exports = {
     console.log(err.message);
     console.log(err.stack);
   },
-  cleanManifest: function (manifest) {
+  cleanManifest: function (manifest, entries) {
+    var entryPaths = Object.keys(entries).reduce(function (currentEntryPaths, entryKey) {
+      return currentEntryPaths.concat(entries[entryKey].path.substr(1));
+    }, []);
+
     return {
       name: manifest.name,
       content: Object.keys(manifest.content).reduce(function (currentManifest, key) {
@@ -69,7 +73,11 @@ module.exports = {
           key.substr(0, 8) === './queues' &&
           key.match(/node_modules/).length === 1
         ) {
-          currentManifest[key] = manifest.content[key];
+          var isEntryMatch = Boolean(entryPaths.filter(function (entryPath) {
+            return key.indexOf(entryPath) >= 0;
+          }).pop());
+
+          currentManifest[isEntryMatch ? path.dirname(key) : key] = manifest.content[key];
         }
 
         return currentManifest;
