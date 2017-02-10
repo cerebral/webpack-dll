@@ -7,9 +7,6 @@ var cleaner = require('./cleaner');
 var vendorsQueue = require('./vendorsQueue');
 var requestQueue = require('./requestQueue');
 var extract = require('./extract');
-var preLoadPackages = require('./preloadPackages');
-
-
 
 module.exports = function extractAndBundle (file) {
   return function (req, res) {
