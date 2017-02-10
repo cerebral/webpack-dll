@@ -7,6 +7,7 @@ var path = require('path');
 var dashboard = require('./dashboard');
 var cors = require('cors');
 var getPackage = require('./getPackage');
+var fs = require('fs');
 
 app.use(compression());
 app.use(cors({
@@ -14,6 +15,10 @@ app.use(cors({
 }));
 
 if (process.env.DEBUG) {
+  if (!fs.existsSync(path.resolve('src', 'dashboard', 'public', 'bundle'))) {
+    fs.mkdir(path.resolve('src', 'dashboard', 'public', 'bundle'))
+  }
+
   app.use(express.static(path.resolve('src', 'dashboard', 'public')));
   app.get('/dashboard/packages', dashboard.getPackages);
   app.get('/dashboard/packages/:packageName', dashboard.getPackage);
