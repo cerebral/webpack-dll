@@ -1,10 +1,10 @@
 {
-  "name": "webpack-dll-service",
+  "name": "webpack-dll",
   "version": "1.0.0",
   "description": "A service that converts a package into a DLL and manifest",
   "main": "test.js",
   "scripts": {
-    "start": "node src/index",
+    "start": "WEBPACK_DLL_ENV=webpack-dll-dev DEBUG=true node src/index",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
@@ -34,12 +34,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/cerebral/webpack-dll-service.git"
+    "url": "git+https://github.com/cerebral/webpack-dll.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/cerebral/webpack-dll-service/issues"
+    "url": "https://github.com/cerebral/webpack-dll/issues"
   },
-  "homepage": "https://github.com/cerebral/webpack-dll-service#readme"
+  "homepage": "https://github.com/cerebral/webpack-dll#readme"
 }

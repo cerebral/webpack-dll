@@ -1,5 +1,7 @@
 var uuid = require('uuid');
 var queue = {};
+var fs = require('fs');
+var path = require('path');
 
 var getQueueIdByVendorsBundleName = function (vendorsBundleName) {
   return Object.keys(queue).filter(function (key) {
@@ -18,7 +20,11 @@ module.exports = {
   },
   getQueueIdByVendorsBundleName: getQueueIdByVendorsBundleName,
   remove: function (vendorsBundleName) {
-    delete queue[getQueueIdByVendorsBundleName(vendorsBundleName)];
+    var queueId = getQueueIdByVendorsBundleName(vendorsBundleName);
+
+    fs.rmdir(path.resolve('temp', 'queues', queueId), function () {
+      delete queue[queueId];
+    });
   },
   update: function (id, bundle) {
     queue[id] = bundle;

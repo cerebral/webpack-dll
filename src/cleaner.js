@@ -1,3 +1,4 @@
+var config = require(`../configs/${process.env.WEBPACK_DLL_ENV}.json`);
 var utils = require('./utils');
 var path = require('path');
 var vendorsQueue = require('./vendorsQueue');
@@ -5,7 +6,7 @@ var requestQueue = require('./requestQueue');
 
 module.exports = function (options) {
   return function (bundle) {
-    var timeout = utils.isProduction() ? 1000 * 60 * 5 : 1000 * 60;
+    var timeout = config.cleanQueueTimeout;
 
     setTimeout(function () {
       Object.keys(bundle.entries).forEach(function (entry) {

@@ -9,20 +9,7 @@ var requestQueue = require('./requestQueue');
 var extract = require('./extract');
 var preLoadPackages = require('./preloadPackages');
 
-preLoadPackages([
-  // Core node
-  'process',
 
-  // Webpack
-  'webpack',
-  'node-pre-gyp',
-  'nopt',
-  'rc',
-  'tar-pack',
-
-  // Loaders
-  'json-loader'
-]);
 
 module.exports = function extractAndBundle (file) {
   return function (req, res) {

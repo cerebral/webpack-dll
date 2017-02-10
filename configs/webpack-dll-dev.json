@@ -1,0 +1,4 @@
+{
+  "clientOrigin": "http://localhost:4000",
+  "cleanQueueTimeout": 60000
+}

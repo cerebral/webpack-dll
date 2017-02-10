@@ -1,3 +1,4 @@
+var config = require(`../configs/${process.env.WEBPACK_DLL_ENV}.json`);
 var server = require('http').createServer();
 var express = require('express');
 var compression = require('compression');
@@ -9,9 +10,11 @@ var cors = require('cors');
 var getPackage = require('./getPackage');
 
 app.use(compression());
+app.use(cors({
+  origin: config.clientOrigin
+}));
 
-if (process.env.DEBUG || process.env.NODE_ENV !== 'production') {
-  app.use(cors());
+if (process.env.DEBUG) {
   app.use(express.static(path.resolve('src', 'dashboard', 'public')));
   app.get('/dashboard/packages', dashboard.getPackages);
   app.get('/dashboard/packages/:packageName', dashboard.getPackage);
@@ -30,3 +33,10 @@ console.log('Running webpack-dll-service version: ', require('../package.json').
 
 server.on('request', app);
 server.listen(process.env.NODE_ENV === 'production' ? process.env.PORT : 5000);
+
+process.on('SIGTERM', function () {
+  app.close(function () {
+    console.log('Graceful shutdown successful');
+    process.exit(0);
+  });
+})
