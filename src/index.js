@@ -1,5 +1,4 @@
 var config = require(`../configs/${process.env.WEBPACK_DLL_ENV}.json`);
-var server = require('http').createServer();
 var express = require('express');
 var compression = require('compression');
 var app = express();
@@ -31,11 +30,10 @@ if (process.env.DEBUG) {
 
 console.log('Running webpack-dll-service version: ', require('../package.json').version);
 
-server.on('request', app);
-server.listen(process.env.NODE_ENV === 'production' ? process.env.PORT : 5000);
+var server = app.listen(process.env.NODE_ENV === 'production' ? process.env.PORT : 5000);
 
 process.on('SIGTERM', function () {
-  app.close(function () {
+  server.close(function () {
     console.log('Graceful shutdown successful');
     process.exit(0);
   });
