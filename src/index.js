@@ -15,8 +15,8 @@ app.use(cors({
 }));
 
 if (process.env.DEBUG) {
-  if (!fs.existsSync(path.resolve('src', 'dashboard', 'public', 'bundle'))) {
-    fs.mkdir(path.resolve('src', 'dashboard', 'public', 'bundle'))
+  if (!fs.existsSync(path.resolve('src', 'dashboard', 'public', 'bundles'))) {
+    fs.mkdir(path.resolve('src', 'dashboard', 'public', 'bundles'))
   }
 
   app.use(express.static(path.resolve('src', 'dashboard', 'public')));
