@@ -4,3 +4,4 @@ node_modules
 test*
 *.log
 src/dashboard/public/bundles/*
+entries.js

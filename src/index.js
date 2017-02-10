@@ -10,9 +10,7 @@ var getPackage = require('./getPackage');
 var fs = require('fs');
 
 app.use(compression());
-app.use(cors({
-  origin: config.clientOrigin
-}));
+app.use(cors())
 
 if (process.env.DEBUG) {
   if (!fs.existsSync(path.resolve('src', 'dashboard', 'public', 'bundles'))) {
@@ -24,12 +22,20 @@ if (process.env.DEBUG) {
   app.get('/dashboard/packages/:packageName', dashboard.getPackage);
   app.delete('/dashboard/packages/:packageName', dashboard.deletePackage);
 
-  app.get('/query/:packageName', getPackage);
-  app.get('/:packages/dll.js', dashboard.getDll);
+  app.get('/query/:packageName', cors({
+    origin: config.clientQueryOrigin
+  }), getPackage);
+  app.get('/:packages/dll.js', cors({
+    origin: config.clientDllOrigin
+  }), dashboard.getDll);
   app.get('/:packages/manifest.json', dashboard.getManifest);
 } else {
-  app.get('/query/:packageName', getPackage);
-  app.get('/:packages/dll.js', extractAndBundle('dll.js'));
+  app.get('/query/:packageName', cors({
+    origin: config.clientQueryOrigin
+  }), getPackage);
+  app.get('/:packages/dll.js', cors({
+    origin: config.clientDllOrigin
+  }), extractAndBundle('dll.js'));
   app.get('/:packages/manifest.json', extractAndBundle('manifest.json'));
 }
 

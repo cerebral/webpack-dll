@@ -1,4 +1,5 @@
 {
-  "clientOrigin": "http://localhost:3000",
+  "clientDllOrigin": "http://localhost:4000",
+  "clientQueryOrigin": "http://localhost:3000",
   "cleanQueueTimeout": 60000
 }
