@@ -1,27 +1,6 @@
-const semver = require('semver')
 const request = require('request')
 
-function getLatestNpmVersion (versions) {
-  function sorter (a, b) {
-    if (semver.lt(a, b)) {
-      return 1
-    }
-    if (semver.lt(b, a)) {
-      return -1
-    }
-
-    return 0
-  }
-
-  var versionsList = Object.keys(versions)
-  var latestVersion = versionsList.filter(function (version) {
-    return version.indexOf('-') === -1
-  }).sort(sorter)[0]
-
-  return latestVersion || versionsList[versionsList.length - 1]
-}
-
-module.exports = function getPackage (req, res) {
+module.exports = function queryPackage (req, res) {
   var nameSplit = req.params.packageName.split('@');
 
   // If leading @
@@ -45,16 +24,23 @@ module.exports = function getPackage (req, res) {
         return reject();
       }
 
-      var validVersion = !version || version in package.versions;
-      if (!validVersion) {
-        return reject();
-      }
-
       resolve(package);
     });
   })
     .then(function (package) {
-      var packageVersion = version || getLatestNpmVersion(package.versions);
+      var packageVersion
+
+      if (version) {
+        if (package['dist-tags'][version]) {
+          packageVersion = package['dist-tags'][version]
+        } else if (package.versions[version]) {
+          packageVersion = version
+        } else {
+          throw new Error('Version not valid')
+        }
+      } else {
+        packageVersion = package['dist-tags'].latest
+      }
 
       res.send({
         name: package.name,

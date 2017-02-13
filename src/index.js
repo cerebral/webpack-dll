@@ -6,7 +6,7 @@ var extractAndBundle = require('./extractAndBundle');
 var path = require('path');
 var dashboard = require('./dashboard');
 var cors = require('cors');
-var getPackage = require('./getPackage');
+var queryPackage = require('./queryPackage');
 var fs = require('fs');
 
 app.use(compression());
@@ -24,7 +24,7 @@ if (process.env.DEBUG) {
 
   app.get('/query/:packageName', cors({
     origin: config.clientQueryOrigin
-  }), getPackage);
+  }), queryPackage);
   app.get('/:packages/dll.js', cors({
     origin: config.clientDllOrigin
   }), dashboard.getDll);
@@ -32,7 +32,7 @@ if (process.env.DEBUG) {
 } else {
   app.get('/query/:packageName', cors({
     origin: config.clientQueryOrigin
-  }), getPackage);
+  }), queryPackage);
   app.get('/:packages/dll.js', cors({
     origin: config.clientDllOrigin
   }), extractAndBundle('dll.js'));
