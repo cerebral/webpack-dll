@@ -76,8 +76,18 @@ module.exports = {
           var isEntryMatch = Boolean(entryPaths.filter(function (entryPath) {
             return key.indexOf(entryPath) >= 0;
           }).pop());
+          var pathParts = key.split('/')
+          var pathKey = isEntryMatch ? './' + pathParts.reduce(function (currentPath, part, index) {
+            if (part === 'node_modules') {
+              return path.join(currentPath, part, pathParts[index + 1])
+            } else if (currentPath.indexOf('node_modules') === -1) {
+              return path.join(currentPath, part)
+            }
 
-          currentManifest[isEntryMatch ? path.dirname(key) : key] = manifest.content[key];
+            return currentPath
+          }, '') : key
+
+          currentManifest[pathKey] = manifest.content[key];
         }
 
         return currentManifest;
