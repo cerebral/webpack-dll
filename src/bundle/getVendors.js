@@ -1,8 +1,9 @@
 var utils = require('../utils');
 var path = require('path')
+
 module.exports = function (entries, options) {
   return Object.keys(entries).reduce(function (vendors, entryKey) {
-    return vendors.concat(
+    const newVendors = vendors.concat(
       entries[entryKey].isBrowserEntry ?
         [entryKey]
       :
@@ -13,5 +14,11 @@ module.exports = function (entries, options) {
           entries[entryKey].path
         )
     );
+
+    if (newVendors.indexOf(entries[entryKey].path) === -1) {
+      newVendors.push(path.join('/', 'queues', options.queueId, entries[entryKey].path));
+    }
+
+    return newVendors;
   }, []);
 }

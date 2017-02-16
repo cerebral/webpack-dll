@@ -38,8 +38,8 @@ module.exports = {
   },
   findEntryPoints: function (fs, entryKey, queuePath, baseEntry) {
     var filePath = path.join(queuePath, path.dirname(baseEntry.substr(2)));
-
     var entries = findEntryPoints(fs)(entryKey, filePath);
+
     require('fs').writeFileSync('entries.js', JSON.stringify(entries, null, 2));
     return entries;
   },
@@ -76,6 +76,7 @@ module.exports = {
           var isEntryMatch = Boolean(entryPaths.filter(function (entryPath) {
             return key.indexOf(entryPath) >= 0;
           }).pop());
+
           var pathParts = key.split('/')
           var pathKey = isEntryMatch ? './' + pathParts.reduce(function (currentPath, part, index) {
             if (part === 'node_modules') {

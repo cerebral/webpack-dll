@@ -15,6 +15,7 @@ module.exports = function (options) {
     })
     .then(function () {
       var version = semver.maxSatisfying(Object.keys(data.versions), options.version);
+
       return {
         name: data.name,
         version: version,
