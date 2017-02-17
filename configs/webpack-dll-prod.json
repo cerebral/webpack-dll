@@ -1,0 +1,5 @@
+{
+  "clientDllOrigin": "https://webpack-sandbox-prod.herokuapp.com",
+  "clientQueryOrigin": "https://webpackbin-test-prod.firebaseapp.com",
+  "cleanQueueTimeout": 300000
+}
