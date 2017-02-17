@@ -23,11 +23,6 @@ module.exports = function (options) {
         resolveLoader: { root: path.resolve('node_modules') },
         resolve: { root: path.join('/', 'queues', options.queueId, 'node_modules') },
         plugins: [
-          new webpack.DefinePlugin({
-            'process.env': {
-              'NODE_ENV': JSON.stringify('production'),
-            }
-          }),
           new webpack.DllPlugin({
            path: path.join('/', 'bundles', bundle.name, 'manifest.json'),
            name: 'dll_bundle',
