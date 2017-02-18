@@ -45,7 +45,7 @@ function extractPackages (req) {
   try {
     fs.mkdirSync(bundlePublicPath);
   } catch (err) {
-    
+
   }
 
 
@@ -58,17 +58,35 @@ function extractPackages (req) {
 module.exports = {
   getDll: function (req, res) {
     var bundlePublicPath = path.resolve('src', 'dashboard', 'public', 'bundles', req.params.packages);
-    try {
-      var content = fs.readFileSync(path.join(bundlePublicPath, 'dll.js')).toString();
-      var contentType = mime.lookup('dll.js');
-      var contentLength = content.length;
 
-      res.setHeader('Content-Type', contentType);
-      res.setHeader('Content-Length', contentLength);
-      res.send(content);
-    } catch (e) {
+    try {
+      if (fs.statSync(bundlePublicPath).isDirectory() && fs.statSync(path.join(bundlePublicPath, 'dll.js')).isFile()) {
+        var content = fs.readFileSync(path.join(bundlePublicPath, 'dll.js')).toString();
+        var contentType = mime.lookup('dll.js');
+        var contentLength = content.length;
+
+        res.setHeader('Content-Type', contentType);
+        res.setHeader('Content-Length', contentLength);
+        res.send(content);
+      } else {
+        extractPackages(req)
+          .then(function (results) {
+            var content = results[0];
+            var contentType = mime.lookup('dll.js');
+            var contentLength = content.length;
+
+            res.setHeader('Content-Type', contentType);
+            res.setHeader('Content-Length', contentLength);
+            res.send(results[0]);
+          })
+          .catch(function (err) {
+            res.send(err);
+          });
+      }
+    } catch (e) {
       extractPackages(req)
         .then(function (results) {
+          var content = results[0];
           var contentType = mime.lookup('dll.js');
           var contentLength = content.length;
 
@@ -83,11 +101,22 @@ module.exports = {
   },
   getManifest: function (req, res) {
     var bundlePublicPath = path.resolve('src', 'dashboard', 'public', 'bundles', req.params.packages);
-    try {
-      var content = fs.readFileSync(path.join(bundlePublicPath, 'manifest.json')).toString();
 
-      res.send(JSON.parse(content));
-    } catch (e) {
+    try {
+      if (fs.statSync(bundlePublicPath).isDirectory() && fs.statSync(path.join(bundlePublicPath, 'manifest.json')).isFile()) {
+        var content = fs.readFileSync(path.join(bundlePublicPath, 'manifest.json')).toString();
+
+        res.send(JSON.parse(content));
+      } else {
+        extractPackages(req)
+          .then(function (results) {
+            res.send(results[1]);
+          })
+          .catch(function (err) {
+            res.send(err);
+          });
+      }
+    } catch (e) {
       extractPackages(req)
         .then(function (results) {
           res.send(results[1]);
@@ -96,6 +125,7 @@ module.exports = {
           res.send(err);
         });
     }
+
   },
   getPackages: function (req, res) {
     var bundlePublicPath = path.resolve('src', 'dashboard', 'public', 'bundles');
