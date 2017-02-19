@@ -1,4 +1,4 @@
-var memoryFs = require('./memoryFs');
+  var memoryFs = require('./memoryFs');
 var utils = require('./utils');
 var path = require('path');
 var resolveEntries = require('./resolveEntries');

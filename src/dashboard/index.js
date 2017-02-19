@@ -4,7 +4,7 @@ var fs = require('fs');
 var mime = require('mime');
 
 function extractPackages (req) {
-  var bundlePublicPath = path.resolve('src', 'dashboard', 'public', 'bundles', req.params.packages);
+  var bundlePublicPath = path.resolve('src', 'dashboard', 'public', 'bundles', req.params.packages.replace(/\//g, ','));
   var dllPromise = new Promise(function (resolve, reject) {
     extractAndBundle('dll.js')(req, {
       setHeader: function () {},

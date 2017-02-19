@@ -11,6 +11,12 @@ module.exports = {
     return params.split('+').reduce(function (currentPackages, package) {
       var packageArray = package.split('@');
 
+      // If leading @
+      if (!packageArray[0]) {
+        packageArray.shift();
+        packageArray[0] = '@' + packageArray[0];
+      }
+
       currentPackages[packageArray[0]] = packageArray[1];
 
       return currentPackages;
@@ -38,10 +44,8 @@ module.exports = {
   },
   findEntryPoints: function (fs, entryKey, queuePath, baseEntry) {
     var filePath = path.join(queuePath, path.dirname(baseEntry.substr(2)));
-    var entries = findEntryPoints(fs)(entryKey, filePath);
 
-    require('fs').writeFileSync('entries.js', JSON.stringify(entries, null, 2));
-    return entries;
+    return findEntryPoints(fs)(entryKey, filePath);
   },
   getVendorsBundleName: function (packages) {
     if (!packages || Object.keys(packages).length === 0) {
@@ -80,7 +84,15 @@ module.exports = {
           var pathParts = key.split('/')
           var pathKey = isEntryMatch ? './' + pathParts.reduce(function (currentPath, part, index) {
             if (part === 'node_modules') {
-              return path.join(currentPath, part, pathParts[index + 1])
+              var entryLength = Object.keys(entries).reduce((length, entryKey) => {
+                if (key.match(new RegExp(entryKey + '/'))) {
+                  return entryKey.split('/').length
+                }
+
+                return length
+              }, 0)
+
+              return path.join(currentPath, part, pathParts.splice(index + 1, entryLength).join('/'))
             } else if (currentPath.indexOf('node_modules') === -1) {
               return path.join(currentPath, part)
             }
