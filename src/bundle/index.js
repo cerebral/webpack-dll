@@ -20,8 +20,7 @@ module.exports = function (options) {
           filename: 'dll.js',
           library: 'dll_bundle'
         },
-        resolveLoader: { root: path.resolve('node_modules') },
-        resolve: { root: path.join('/', 'queues', options.queueId, 'node_modules') },
+
         plugins: [
           new webpack.DllPlugin({
            path: path.join('/', 'bundles', bundle.name, 'manifest.json'),

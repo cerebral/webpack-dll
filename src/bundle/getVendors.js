@@ -15,8 +15,9 @@ module.exports = function (entries, options) {
         )
     );
 
-    if (newVendors.indexOf(entries[entryKey].path) === -1) {
-      newVendors.push(path.join('/', 'queues', options.queueId, entries[entryKey].path));
+    const directEntryPath = path.join('/', 'queues', options.queueId, entries[entryKey].path)
+    if (newVendors.indexOf(directEntryPath) === -1) {
+      newVendors.push(directEntryPath);
     }
 
     return newVendors;
