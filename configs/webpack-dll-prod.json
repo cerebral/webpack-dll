@@ -3,6 +3,6 @@
     "https://webpack-sandbox-prod.herokuapp.com",
     "https://webpack-sandbox-prod-eu.herokuapp.com"
   ],
-  "clientQueryOrigin": "https://webpackbin-prod.firebaseapp.com",
+  "clientQueryOrigin": "https://www.webpackbin.com",
   "cleanQueueTimeout": 300000
 }
