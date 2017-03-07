@@ -4,24 +4,32 @@ var path = require('path');
 var vendorsQueue = require('./vendorsQueue');
 var requestQueue = require('./requestQueue');
 
-module.exports = function (options) {
-  return function (bundle) {
-    var timeout = config.cleanQueueTimeout;
+var timeouts = {}
 
-    setTimeout(function () {
-      Object.keys(bundle.entries).forEach(function (entry) {
-        options.targetFs.rmdirSync(path.join('/', 'queues', options.queueId, 'node_modules', entry));
-      });
-      options.targetFs.rmdirSync(path.join('/', 'bundles', bundle.name));
-      options.targetFs.rmdirSync(path.join('/', 'queues', options.queueId, 'node_modules'));
-      options.targetFs.rmdirSync(path.join('/', 'queues', options.queueId));
+module.exports = {
+  add: function (options) {
+    return function (bundle) {
+      var timeout = config.cleanQueueTimeout;
 
-      vendorsQueue.remove(bundle.name);
-      requestQueue.remove(options.queueId);
+      timeouts[options.queueId] = setTimeout(function () {
+        Object.keys(bundle.entries).forEach(function (entry) {
+          options.targetFs.rmdirSync(path.join('/', 'queues', options.queueId, 'node_modules', entry));
+        });
+        options.targetFs.rmdirSync(path.join('/', 'bundles', bundle.name));
+        options.targetFs.rmdirSync(path.join('/', 'queues', options.queueId, 'node_modules'));
+        options.targetFs.rmdirSync(path.join('/', 'queues', options.queueId));
 
-      console.log('Removed entries ' + Object.keys(bundle.entries) + ' and ' + bundle.name);
-    }, timeout);
+        vendorsQueue.remove(bundle.name);
+        requestQueue.remove(options.queueId);
 
-    return bundle;
-  };
-};
+        console.log('Removed entries with TIMEOUT - ' + Object.keys(bundle.entries) + ' and ' + bundle.name);
+      }, timeout);
+
+      return bundle;
+    };
+  },
+  remove: function (queueId, bundle) {
+    clearTimeout(timeouts[queueId]);
+    console.log('Removed entries MANUALLY - ' + Object.keys(bundle.entries) + ' and ' + bundle.name);
+  }
+}

@@ -62,12 +62,12 @@ module.exports = function extractAndBundle (file) {
         queueId: queueId,
         targetFs: memoryFs.fs
     }))
-    .then(cleaner({
+    .then(cleaner.add({
         queueId: queueId,
         targetFs: memoryFs.fs
     }))
     .then(function (bundle) {
-      requestQueue.resolveBundle(queueId, bundle);
+      requestQueue.resolveManifest(queueId, bundle);
       requestQueue.resolveDll(queueId, bundle);
     })
     .catch(function (err) {
