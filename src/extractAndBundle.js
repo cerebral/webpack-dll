@@ -67,11 +67,10 @@ module.exports = function extractAndBundle (file) {
         targetFs: memoryFs.fs
     }))
     .then(function (bundle) {
-      requestQueue.resolveManifest(queueId, bundle);
-      requestQueue.resolveDll(queueId, bundle);
+      requestQueue.resolveFiles(queueId, bundle);
     })
     .catch(function (err) {
-      requestQueue.reject(file, queueId, err);
+      requestQueue.reject(queueId, err);
     });
   }
 }

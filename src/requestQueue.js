@@ -13,12 +13,21 @@ module.exports = {
     queue[id][file].push(res);
 
     if (queue[id].bundle) {
-      this.resolveManifest(id, queue[id].bundle)
-      this.resolveDll(id, queue[id].bundle)
+      this.resolveFiles(id, queue[id].bundle)
     }
   },
   remove: function (id) {
     delete queue[id];
+  },
+  resolveFiles (id, bundle) {
+    this.resolveManifest(id, bundle)
+    this.resolveDll(id, bundle)
+
+    if (queue[id].resolvedDll && queue[id].resolvedManifest) {
+      delete queue[id]
+
+      require('./cleaner').remove(id, bundle)
+    }
   },
   resolveDll: function (id, bundle) {
     queue[id].bundle = bundle;
@@ -38,12 +47,6 @@ module.exports = {
 
     queue[id].resolvedDll = Boolean(queue[id]['dll.js'].length)
     queue[id]['dll.js'] = [];
-
-    if (queue[id].resolvedDll && queue[id].resolvedManifest) {
-      delete queue[id]
-
-      require('./cleaner').remove(id, bundle)
-    }
   },
   resolveManifest: function (id, bundle) {
     queue[id].bundle = bundle;
@@ -59,24 +62,23 @@ module.exports = {
 
     queue[id].resolvedManifest = Boolean(queue[id]['manifest.json'].length)
     queue[id]['manifest.json'] = [];
-
-    if (queue[id].resolvedDll && queue[id].resolvedManifest) {
-      delete queue[id]
-
-      require('./cleaner').remove(id, bundle)
-    }
   },
-  reject: function (file, id, err) {
-    var requests = queue[id][file];
+  reject: function (id, err) {
+    var requests = queue[id]['dll.js'].concat(queue[id]['manifest.json']);
+    var bundle = queue[id].bundle;
 
     requests.forEach(function (res) {
       try {
         res.status(500).send({
-          message: err
+          message: err.message
         });
       } catch (e) {}
     })
 
-    queue[id][file] = [];
+    if (bundle) {
+      require('./cleaner').remove(id, bundle);
+    }
+
+    delete queue[id];
   }
 }
