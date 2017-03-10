@@ -75,13 +75,11 @@ module.exports = function extractAndBundle (file) {
             const dllPath = path.join('/', 'bundles', bundle.name, 'dll.js');
             const manifestPath = path.join('/', 'bundles', bundle.name, 'manifest.json');
 
-            console.log('Writing to Redis');
             return Promise.all([
               redis.set(dllPath, memoryFs.fs.readFileSync(dllPath).toString()),
               redis.set(manifestPath, memoryFs.fs.readFileSync(manifestPath).toString())
             ])
               .then(function () {
-                console.log('Successfully written to Redis');
 
                 return bundle;
               })

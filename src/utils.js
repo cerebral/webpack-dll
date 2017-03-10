@@ -109,12 +109,21 @@ module.exports = {
     }
   },
   sendFile: function (fileName, content) {
-    var contentType = mime.lookup(fileName);
-    var contentLength = content.length;
+    var contentType
+    var contentLength
+
+    if (path.extname(fileName) !== '.json') {
+      contentType = mime.lookup(fileName);
+      contentLength = content.length;
+    }
+
 
     return function (res) {
-      res.setHeader('Content-Type', contentType);
-      res.setHeader('Content-Length', contentLength);
+      if (path.extname(fileName) !== '.json') {
+        res.setHeader('Content-Type', contentType);
+        res.setHeader('Content-Length', contentLength);
+      }
+
       try {
         res.send(content);
       } catch (e) {}
