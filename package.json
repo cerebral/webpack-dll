@@ -9,7 +9,6 @@
   },
   "dependencies": {
     "compression": "^1.6.2",
-    "connect-timeout": "^1.8.0",
     "cors": "^2.8.1",
     "express": "^4.13.4",
     "json-loader": "^0.5.4",

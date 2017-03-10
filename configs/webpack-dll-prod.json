@@ -4,5 +4,6 @@
     "https://webpack-sandbox-prod-eu.herokuapp.com"
   ],
   "clientQueryOrigin": "https://www.webpackbin.com",
-  "cleanQueueTimeout": 90000
+  "cleanQueueTimeout": 90000,
+  "connectTimeout": 25000
 }

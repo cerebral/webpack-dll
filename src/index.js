@@ -35,6 +35,8 @@ console.log('Running webpack-dll-service version: ', require('../package.json').
 
 var server = app.listen(process.env.NODE_ENV === 'production' ? process.env.PORT : 5000);
 
+server.timeout = config.connectTimeout;
+
 process.on('SIGTERM', function () {
   server.close(function () {
     console.log('Graceful shutdown successful');
