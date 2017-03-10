@@ -21,23 +21,15 @@ if (process.env.DEBUG) {
   app.get('/dashboard/packages', dashboard.getPackages);
   app.get('/dashboard/packages/:packageName', dashboard.getPackage);
   app.delete('/dashboard/packages/:packageName', dashboard.deletePackage);
-
-  app.get('/query/:packageName', cors({
-    origin: config.clientQueryOrigin
-  }), queryPackage);
-  app.get('/:packages/dll.js', cors({
-    origin: config.clientDllOrigin
-  }), dashboard.getDll);
-  app.get('/:packages/manifest.json', dashboard.getManifest);
-} else {
-  app.get('/query/:packageName', cors({
-    origin: config.clientQueryOrigin
-  }), queryPackage);
-  app.get('/:packages/dll.js', cors({
-    origin: config.clientDllOrigin
-  }), extractAndBundle('dll.js'));
-  app.get('/:packages/manifest.json', extractAndBundle('manifest.json'));
 }
+
+app.get('/query/:packageName', cors({
+  origin: config.clientQueryOrigin
+}), queryPackage);
+app.get('/:packages/dll.js', cors({
+  origin: config.clientDllOrigin
+}), extractAndBundle('dll.js'));
+app.get('/:packages/manifest.json', extractAndBundle('manifest.json'));
 
 console.log('Running webpack-dll-service version: ', require('../package.json').version);
 

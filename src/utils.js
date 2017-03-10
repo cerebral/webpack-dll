@@ -1,6 +1,7 @@
 var hash = require('string-hash');
 var path = require('path');
 var findEntryPoints = require('./findEntryPoints');
+var mime = require('mime');
 
 module.exports = {
   isProduction: function () {
@@ -105,6 +106,18 @@ module.exports = {
 
         return currentManifest;
       }, {})
+    }
+  },
+  sendFile: function (fileName, content) {
+    var contentType = mime.lookup(fileName);
+    var contentLength = content.length;
+
+    return function (res) {
+      res.setHeader('Content-Type', contentType);
+      res.setHeader('Content-Length', contentLength);
+      try {
+        res.send(content);
+      } catch (e) {}
     }
   }
 };

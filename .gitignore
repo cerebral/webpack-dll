@@ -5,3 +5,4 @@ test*
 *.log
 src/dashboard/public/bundles/*
 entries.js
+*.rdb

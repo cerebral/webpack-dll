@@ -1,5 +1,4 @@
 var memoryFs = require('./memoryFs');
-var mime = require('mime');
 var path = require('path');
 var queue = {};
 var utils = require('./utils');
@@ -34,17 +33,8 @@ module.exports = {
 
     var requests = queue[id]['dll.js'];
     var content = memoryFs.fs.readFileSync(path.join('/', 'bundles', bundle.name, 'dll.js')).toString();
-    var contentType = mime.lookup('dll.js');
-    var contentLength = content.length;
 
-    requests.forEach(function (res) {
-      res.setHeader('Content-Type', contentType);
-      res.setHeader('Content-Length', contentLength);
-      try {
-        res.send(content);
-      } catch (e) {}
-    });
-
+    requests.forEach(utils.sendFile('dll.js', content))
     queue[id].resolvedDll = Boolean(queue[id]['dll.js'].length)
     queue[id]['dll.js'] = [];
   },
@@ -52,14 +42,9 @@ module.exports = {
     queue[id].bundle = bundle;
 
     var requests = queue[id]['manifest.json'];
-    var manifest = JSON.parse(memoryFs.fs.readFileSync(path.join('/', 'bundles', bundle.name, 'manifest.json')).toString());
+    var content = JSON.parse(memoryFs.fs.readFileSync(path.join('/', 'bundles', bundle.name, 'manifest.json')).toString());
 
-    requests.forEach(function (res) {
-      try {
-        res.send(manifest);
-      } catch (e) {}
-    });
-
+    requests.forEach(utils.sendFile('manifest.json', content));
     queue[id].resolvedManifest = Boolean(queue[id]['manifest.json'].length)
     queue[id]['manifest.json'] = [];
   },
