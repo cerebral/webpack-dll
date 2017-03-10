@@ -109,20 +109,13 @@ module.exports = {
     }
   },
   sendFile: function (fileName, content) {
-    var contentType
-    var contentLength
-
-    if (path.extname(fileName) !== '.json') {
-      contentType = mime.lookup(fileName);
-      contentLength = content.length;
-    }
+    var contentType = mime.lookup(fileName);
+    var contentLength = content.length;
 
 
     return function (res) {
-      if (path.extname(fileName) !== '.json') {
-        res.setHeader('Content-Type', contentType);
-        res.setHeader('Content-Length', contentLength);
-      }
+      res.setHeader('Content-Type', contentType);
+      res.setHeader('Content-Length', contentLength);
 
       try {
         res.send(content);

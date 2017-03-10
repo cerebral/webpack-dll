@@ -42,7 +42,7 @@ module.exports = {
     queue[id].bundle = bundle;
 
     var requests = queue[id]['manifest.json'];
-    var content = JSON.parse(memoryFs.fs.readFileSync(path.join('/', 'bundles', bundle.name, 'manifest.json')).toString());
+    var content = memoryFs.fs.readFileSync(path.join('/', 'bundles', bundle.name, 'manifest.json')).toString();
 
     requests.forEach(utils.sendFile('manifest.json', content));
     queue[id].resolvedManifest = Boolean(queue[id]['manifest.json'].length)
