@@ -80,6 +80,8 @@ module.exports = function extractAndBundle (file) {
               redis.set(manifestPath, memoryFs.fs.readFileSync(manifestPath).toString())
             ])
               .then(function () {
+                console.log('Successfully written to Redis');
+
                 return bundle;
               })
               .catch(function (err) {
