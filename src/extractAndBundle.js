@@ -41,6 +41,7 @@ module.exports = function extractAndBundle (file) {
     return redis.get(path.join('/', 'bundles', vendorsBundleName, file))
       .then(function (existingFileContent) {
         if (existingFileContent) {
+          console.log('Send content by REDIS cache', vendorsBundleName, file);
           utils.sendFile(file, existingFileContent)(res);
         } else {
           var queueId = vendorsQueue.add(vendorsBundleName);
