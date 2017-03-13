@@ -121,5 +121,16 @@ module.exports = {
         res.send(content);
       } catch (e) {}
     }
+  },
+  isPrebundledFile: function (file) {
+    return (
+      file.match(/.min.js$/) ||
+      file.match(/\-min.js$/) ||
+      file.match(/.umd.js$/) ||
+      file.match(/.common.js$/) ||
+      file.match(/.es.js$/) ||
+      file.match(/.es6.js$/) ||
+      file.match(/.bundle.js$/)
+    )
   }
 };

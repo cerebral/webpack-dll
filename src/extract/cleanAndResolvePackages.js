@@ -15,13 +15,24 @@ module.exports = function (options) {
     })
     .then(function () {
       var version = semver.maxSatisfying(Object.keys(data.versions), options.version);
+      var main = data.versions[version].main;
+      var browser = data.versions[version].browser;
+      var module = data.versions[version].module;
+      var mainEntry;
+
+      if (!utils.isPrebundledFile(main)) {
+        mainEntry = main;
+      } else if (browser && !utils.isPrebundledFile(browser)) {
+        mainEntry = browser;
+      } else if (module && !utils.isPrebundledFile(module)) {
+        mainEntry = module;
+      }
 
       return {
         name: data.name,
         version: version,
-        main: data.versions[version].main,
-        module: data.versions[version].module,
-        browser: data.versions[version].browser
+        main: mainEntry,
+        isPrebundled: utils.isPrebundledFile(mainEntry)
       };
     });
   }

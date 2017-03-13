@@ -5,10 +5,8 @@ module.exports = function (fs) {
     return (
       (path.extname(file) === '.js' || path.extname(file) === '.css') &&
       file[0] !== '_' &&
-      file.indexOf('.min.js') === -1 &&
-      file.indexOf('-min.js') === -1 &&
+      !require('./utils').isPrebundledFile(file) &&
       file.indexOf('.test.js') === -1 &&
-      file.indexOf('.umd.js') === -1 &&
       file.indexOf('.spec.js') === -1 &&
       (
         (encodeURI(content).split(/%..|./).length - 1) < 102400 ||

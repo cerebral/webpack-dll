@@ -8,7 +8,6 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "babel-loader": "^6.4.0",
     "compression": "^1.6.2",
     "cors": "^2.8.1",
     "express": "^4.13.4",

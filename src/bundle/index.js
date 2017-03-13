@@ -11,8 +11,8 @@ module.exports = function (options) {
   return function (bundle) {
     return new Promise(function (resolve, reject) {
       var vendors = getVendors(bundle.entries, options);
-      var hasModuleEntries = Boolean(Object.keys(vendors).filter(function (vendorKey) {
-        return vendors[vendorKey].isModuleEntry
+      var isPrebundled = Boolean(Object.keys(vendors).filter(function (vendorKey) {
+        return vendors[vendorKey].isPrebundled
       }).length)
 
       var defaultWebpackConfig = {
@@ -35,11 +35,7 @@ module.exports = function (options) {
          loaders: [{
            test: /\.json$/,
            loader: 'json'
-         }].concat(hasModuleEntries ? {
-           test: /\.js?$/,
-           exclude: /node_modules/,
-           loader: 'babel'
-         } : [])
+         }]
        }
       };
 
