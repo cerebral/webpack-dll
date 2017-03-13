@@ -4,7 +4,7 @@ var utils = require('./utils');
 module.exports = function (packages) {
   return function (packagesData) {
     var entries = packagesData.reduce(function (entries, packageData) {
-      var packageEntry = packageData.main || 'index.js';
+      var packageEntry = packageData.module || packageData.main || 'index.js';
 
       if (typeof packageData.browser === 'string') {
         packageEntry = packageData.browser;
@@ -20,7 +20,8 @@ module.exports = function (packages) {
 
       entries[packageData.name] = {
         path: '.' + path.resolve('/', 'node_modules', packageData.name, packageEntry),
-        isBrowserEntry: Boolean(packageData.browser)
+        isBrowserEntry: Boolean(packageData.browser),
+        isModuleEntry: Boolean(packageData.module)
       };
 
       return entries;

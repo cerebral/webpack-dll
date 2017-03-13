@@ -11,6 +11,9 @@ module.exports = function (options) {
   return function (bundle) {
     return new Promise(function (resolve, reject) {
       var vendors = getVendors(bundle.entries, options);
+      var hasModuleEntries = Boolean(Object.keys(vendors).filter(function (vendorKey) {
+        return vendors[vendorKey].isModuleEntry
+      }).length)
 
       var defaultWebpackConfig = {
         context: '/',
@@ -20,7 +23,6 @@ module.exports = function (options) {
           filename: 'dll.js',
           library: 'dll_bundle'
         },
-
         plugins: [
           new webpack.DllPlugin({
            path: path.join('/', 'bundles', bundle.name, 'manifest.json'),
@@ -33,7 +35,11 @@ module.exports = function (options) {
          loaders: [{
            test: /\.json$/,
            loader: 'json'
-         }]
+         }].concat(hasModuleEntries ? {
+           test: /\.js?$/,
+           exclude: /node_modules/,
+           loader: 'babel'
+         } : [])
        }
       };
 

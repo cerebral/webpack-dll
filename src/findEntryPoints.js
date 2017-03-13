@@ -1,13 +1,14 @@
 var path = require('path')
 
 module.exports = function (fs) {
-  function isValidFile (file, content, packageName) {
+  function isValidFile (file, filePath, content, packageName) {
     return (
       (path.extname(file) === '.js' || path.extname(file) === '.css') &&
       file[0] !== '_' &&
       file.indexOf('.min.js') === -1 &&
       file.indexOf('-min.js') === -1 &&
       file.indexOf('.test.js') === -1 &&
+      file.indexOf('.umd.js') === -1 &&
       file.indexOf('.spec.js') === -1 &&
       (
         (encodeURI(content).split(/%..|./).length - 1) < 102400 ||
@@ -26,6 +27,7 @@ module.exports = function (fs) {
     'examples',
     'scripts',
     'tests',
+    'test',
     'testing',
     'min',
     'node_modules'
@@ -42,7 +44,7 @@ module.exports = function (fs) {
 
       if (fileStat.isDirectory() && isValidDir(fileOrDir)) {
         return allFilePaths.concat(readPackage(packageName, currentPath));
-      } else if (!fileStat.isDirectory() && isValidFile(fileOrDir, fs.readFileSync(currentPath).toString(), packageName)) {
+      } else if (!fileStat.isDirectory() && isValidFile(fileOrDir, currentPath, fs.readFileSync(currentPath).toString(), packageName)) {
         return allFilePaths.concat(currentPath);
       }
 

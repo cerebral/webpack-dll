@@ -20,6 +20,7 @@ module.exports = function (options) {
         name: data.name,
         version: version,
         main: data.versions[version].main,
+        module: data.versions[version].module,
         browser: data.versions[version].browser
       };
     });
