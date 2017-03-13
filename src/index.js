@@ -12,6 +12,11 @@ var fs = require('fs');
 app.use(compression());
 app.use(cors())
 
+function extractPackages (req, res, next) {
+  req.params.packages = req.params['0']
+  next()
+}
+
 if (process.env.DEBUG) {
   if (!fs.existsSync(path.resolve('src', 'dashboard', 'public', 'bundles'))) {
     fs.mkdir(path.resolve('src', 'dashboard', 'public', 'bundles'))
@@ -26,10 +31,10 @@ if (process.env.DEBUG) {
 app.get('/query/:packageName', cors({
   origin: config.clientQueryOrigin
 }), queryPackage);
-app.get('/:packages/dll.js', cors({
+app.get('/*/dll.js', extractPackages, cors({
   origin: config.clientDllOrigin
 }), extractAndBundle('dll.js'));
-app.get('/:packages/manifest.json', extractAndBundle('manifest.json'));
+app.get('/*/manifest.json', extractPackages, extractAndBundle('manifest.json'));
 
 console.log('Running webpack-dll-service version: ', require('../package.json').version);
 

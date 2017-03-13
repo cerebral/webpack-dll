@@ -27,6 +27,7 @@ preloadPackages([
 
 module.exports = function extractAndBundle (file) {
   return function (req, res) {
+    console.log(req.params);
     var packages = utils.convertPackagesParamToObject(req.params.packages);
     var vendorsBundleName = utils.getVendorsBundleName(packages);
     var existingQueueId = vendorsQueue.getQueueIdByVendorsBundleName(vendorsBundleName);
