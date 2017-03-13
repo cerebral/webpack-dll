@@ -123,6 +123,10 @@ module.exports = {
     }
   },
   isPrebundledFile: function (file) {
+    if (typeof file !== 'string') {
+      return false
+    }
+
     return (
       file.match(/.min.js$/) ||
       file.match(/\-min.js$/) ||
