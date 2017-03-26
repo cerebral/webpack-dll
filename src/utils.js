@@ -44,7 +44,7 @@ module.exports = {
     }, {});
   },
   findEntryPoints: function (fs, entryKey, queuePath, baseEntry) {
-    var filePath = path.join(queuePath, path.dirname(baseEntry.substr(2)));
+    var filePath = path.join(queuePath, 'node_modules', entryKey);
 
     return findEntryPoints(fs)(entryKey, filePath);
   },
