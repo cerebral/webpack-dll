@@ -108,6 +108,20 @@ module.exports = {
       }, {})
     }
   },
+  sendFile: function (fileName, content) {
+    var contentType = mime.lookup(fileName);
+    var contentLength = content.length;
+
+
+    return function (res) {
+      res.setHeader('Content-Type', contentType);
+      res.setHeader('Content-Length', contentLength);
+
+      try {
+        res.send(content);
+      } catch (e) {}
+    }
+  },
   isPrebundledFile: function (file) {
     if (typeof file !== 'string') {
       return false
