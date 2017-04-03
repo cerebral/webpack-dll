@@ -18,9 +18,12 @@ module.exports = function (options) {
       var main = data.versions[version].main;
       var browser = data.versions[version].browser;
       var module = data.versions[version].module;
+      var unpkg = data.versions[version].unpkg;
       var mainEntry;
 
-      if (!utils.isPrebundledFile(main)) {
+      if (!utils.isPrebundledFile(unpkg)) {
+        mainEntry = unpkg;
+      } else if (!utils.isPrebundledFile(main)) {
         mainEntry = main;
       } else if (browser && !utils.isPrebundledFile(browser)) {
         mainEntry = browser;
