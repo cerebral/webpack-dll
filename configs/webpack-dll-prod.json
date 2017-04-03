@@ -5,5 +5,6 @@
   ],
   "clientQueryOrigin": "https://www.webpackbin.com",
   "cleanQueueTimeout": 90000,
-  "connectTimeout": 25000
+  "connectTimeout": 25000,
+  "cacheMaxAge": 31557600
 }

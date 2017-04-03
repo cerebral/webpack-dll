@@ -1,3 +1,4 @@
+var config = require(`../configs/${process.env.WEBPACK_DLL_ENV}.json`);
 var hash = require('string-hash');
 var path = require('path');
 var findEntryPoints = require('./findEntryPoints');
@@ -114,6 +115,7 @@ module.exports = {
 
 
     return function (res) {
+      res.setHeader('Cache-Control', 'public, max-age=' + config.cacheMaxAge);
       res.setHeader('Content-Type', contentType);
       res.setHeader('Content-Length', contentLength);
 
