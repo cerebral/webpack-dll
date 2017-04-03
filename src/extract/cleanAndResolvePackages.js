@@ -21,9 +21,9 @@ module.exports = function (options) {
       var unpkg = data.versions[version].unpkg;
       var mainEntry;
 
-      if (!utils.isPrebundledFile(unpkg)) {
+      if (unpkg && !utils.isPrebundledFile(unpkg)) {
         mainEntry = unpkg;
-      } else if (!utils.isPrebundledFile(main)) {
+      } else if (main && !utils.isPrebundledFile(main)) {
         mainEntry = main;
       } else if (browser && !utils.isPrebundledFile(browser)) {
         mainEntry = browser;
