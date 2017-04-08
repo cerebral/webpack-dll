@@ -4,6 +4,11 @@
     "https://webpack-sandbox-prod-eu.herokuapp.com"
   ],
   "clientQueryOrigin": "https://www.webpackbin.com",
+  "packagerServiceUrls": [
+    "http://45.32.65.145"
+  ],
+  "packageServiceTimeout": 20000,
+  "packageServicesTimeout": 15000,
   "cleanQueueTimeout": 90000,
   "connectTimeout": 25000,
   "cacheMaxAge": 31557600

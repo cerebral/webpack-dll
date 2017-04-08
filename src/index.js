@@ -4,7 +4,6 @@ var compression = require('compression');
 var app = express();
 var extractAndBundle = require('./extractAndBundle');
 var path = require('path');
-var dashboard = require('./dashboard');
 var cors = require('cors');
 var queryPackage = require('./queryPackage');
 var fs = require('fs');
@@ -32,8 +31,7 @@ function extractPackages (req, res, next) {
 
 function respondIfExists (fileName) {
   return function (req, res, next) {
-    var packages = utils.convertPackagesParamToObject(req.params.packages);
-    var vendorsBundleName = utils.getVendorsBundleName(packages);
+    var vendorsBundleName = utils.getVendorsBundleName(req.params.packages);
 
     database.fileExists(vendorsBundleName, fileName)
       .then(function (exists) {
@@ -51,17 +49,6 @@ function respondIfExists (fileName) {
         }
       })
   }
-}
-
-if (process.env.DEBUG) {
-  if (!fs.existsSync(path.resolve('src', 'dashboard', 'public', 'bundles'))) {
-    fs.mkdir(path.resolve('src', 'dashboard', 'public', 'bundles'))
-  }
-
-  app.use(express.static(path.resolve('src', 'dashboard', 'public')));
-  app.get('/dashboard/packages', dashboard.getPackages);
-  app.get('/dashboard/packages/:packageName', dashboard.getPackage);
-  app.delete('/dashboard/packages/:packageName', dashboard.deletePackage);
 }
 
 app.get('/query/:packageName', cors({

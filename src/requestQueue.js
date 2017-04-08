@@ -1,68 +1,95 @@
-var memoryFs = require('./memoryFs');
+var config = require(`../configs/${process.env.WEBPACK_DLL_ENV}.json`);
 var path = require('path');
 var queue = {};
 var utils = require('./utils');
+var request = require('request');
+var errors = require('./errors');
 
 module.exports = {
-  add: function (id, file, res) {
-    if (!queue[id]) {
-      queue[id] = {'dll.js': [], 'manifest.json': [], bundle: null, resolvedManifest: false, resolvedDll: false}
+  add: function (id, packages, file, res) {
+    if (queue[id])  {
+      queue[id][file].push(res);
+    } else {
+      queue[id] = {'dll.js': [], 'manifest.json': [], bundle: null};
+
+      queue[id][file].push(res);
+
+      var requeustQueue = this;
+      return this.getBundle(Date.now(), config.packagerServiceUrls[0], packages)
+        .then(function (bundle) {
+          requeustQueue.resolveFiles(id, bundle);
+
+          return bundle;
+        })
+    }
+  },
+  getBundle (initialRequestTime, host, packages) {
+    var timePassed = Date.now() - initialRequestTime;
+    var requestQueue = this;
+
+    if (timePassed > config.packageServicesTimeout) {
+      throw new Error('PACKAGES_TIMEOUT');
     }
 
-    queue[id][file].push(res);
+    return new Promise(function (resolve, reject) {
+      request({
+        url: host + '/' + packages,
+        timeout: config.packageServiceTimeout
+      }, function (err, response, body) {
+        if (err) {
+          reject(err);
 
-    if (queue[id].bundle) {
-      this.resolveFiles(id, queue[id].bundle)
-    }
+          return;
+        }
+
+        try {
+          resolve(JSON.parse(body));
+        } catch (e) {
+          reject(new Error(body));
+        }
+      })
+    })
+      .catch(function (error) {
+        if (error.code === 'ESOCKETTIMEDOUT' || error.message === 'Service Unavailable') {
+          var nextHost = config.packagerServiceUrls[config.packagerServiceUrls.indexOf(host) + 1];
+          nextHost = nextHost || config.packagerServiceUrls[0];
+
+          return requestQueue.getBundle(initialRequestTime, nextHost, packages);
+        }
+
+        throw error;
+      })
+  },
+  has: function (id) {
+    return Boolean(queue[id]);
   },
   remove: function (id) {
     delete queue[id];
   },
   resolveFiles (id, bundle) {
-    this.resolveManifest(id, bundle)
-    this.resolveDll(id, bundle)
+    this.resolveManifest(id, bundle.manifest);
+    this.resolveDll(id, bundle.dll);
 
-    if (queue[id].resolvedDll && queue[id].resolvedManifest) {
-      delete queue[id]
-
-      require('./cleaner').remove(id, bundle)
-    }
+    delete queue[id];
   },
-  resolveDll: function (id, bundle) {
-    queue[id].bundle = bundle;
-
+  resolveDll: function (id, content) {
     var requests = queue[id]['dll.js'];
-    var content = memoryFs.fs.readFileSync(path.join('/', 'bundles', bundle.name, 'dll.js')).toString();
 
     requests.forEach(utils.sendFile('dll.js', content))
-    queue[id].resolvedDll = Boolean(queue[id]['dll.js'].length)
-    queue[id]['dll.js'] = [];
   },
-  resolveManifest: function (id, bundle) {
-    queue[id].bundle = bundle;
-
+  resolveManifest: function (id, content) {
     var requests = queue[id]['manifest.json'];
-    var content = memoryFs.fs.readFileSync(path.join('/', 'bundles', bundle.name, 'manifest.json')).toString();
 
     requests.forEach(utils.sendFile('manifest.json', content));
-    queue[id].resolvedManifest = Boolean(queue[id]['manifest.json'].length)
-    queue[id]['manifest.json'] = [];
   },
   reject: function (id, err) {
     var requests = queue[id]['dll.js'].concat(queue[id]['manifest.json']);
-    var bundle = queue[id].bundle;
 
     requests.forEach(function (res) {
       try {
-        res.status(500).send({
-          message: err.message
-        });
+        res.status(500).send(err.message);
       } catch (e) {}
     })
-
-    if (bundle) {
-      require('./cleaner').remove(id, bundle);
-    }
 
     delete queue[id];
   }
