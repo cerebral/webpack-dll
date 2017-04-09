@@ -5,6 +5,13 @@ var utils = require('./utils');
 var request = require('request');
 var errors = require('./errors');
 
+var packagers = config.packagerServiceUrls.map(function (packageServiceUrl) {
+  return {
+    url: packageServiceUrl,
+    isAvailable: true
+  }
+});
+
 module.exports = {
   add: function (id, packages, file, res) {
     if (queue[id])  {
@@ -15,7 +22,7 @@ module.exports = {
       queue[id][file].push(res);
 
       var requeustQueue = this;
-      return this.getBundle(Date.now(), config.packagerServiceUrls[0], packages)
+      return this.getBundle(packages)
         .then(function (bundle) {
           requeustQueue.resolveFiles(id, bundle);
 
@@ -23,19 +30,32 @@ module.exports = {
         })
     }
   },
-  getBundle (initialRequestTime, host, packages) {
-    var timePassed = Date.now() - initialRequestTime;
-    var requestQueue = this;
-
-    if (timePassed > config.packageServicesTimeout) {
-      throw new Error('PACKAGES_TIMEOUT');
-    }
-
+  getBundle (packages) {
     return new Promise(function (resolve, reject) {
+      var availablePackager = packagers.reduce(function (currentPackager, packager) {
+        if (currentPackager) {
+          return currentPackager;
+        }
+
+        if (packager.isAvailable) {
+          return packager;
+        }
+
+        return currentPackager;
+      }, null);
+
+      if (!availablePackager) {
+        throw new Error(errors.PACKAGER_NOT_AVAILABLE);
+      }
+
+      availablePackager.isAvailable = false;
+
       request({
-        url: host + '/' + packages,
+        url: availablePackager.url + '/' + packages,
         timeout: config.packageServiceTimeout
       }, function (err, response, body) {
+        availablePackager.isAvailable = true;
+
         if (err) {
           reject(err);
 
@@ -51,10 +71,7 @@ module.exports = {
     })
       .catch(function (error) {
         if (error.code === 'ESOCKETTIMEDOUT' || error.message === 'Service Unavailable') {
-          var nextHost = config.packagerServiceUrls[config.packagerServiceUrls.indexOf(host) + 1];
-          nextHost = nextHost || config.packagerServiceUrls[0];
-
-          return requestQueue.getBundle(initialRequestTime, nextHost, packages);
+          throw new Error(errors.PACKAGER_TIMEOUT);
         }
 
         throw error;
