@@ -54,10 +54,10 @@ function respondIfExists (fileName) {
 app.get('/query/:packageName', cors({
   origin: config.clientQueryOrigin
 }), queryPackage);
-app.get('/*/dll.js', extractPackages, cors({
+app.get('/v1/*/dll.js', extractPackages, cors({
   origin: config.clientDllOrigin
 }), respondIfExists('dll.js'), extractAndBundle('dll.js'));
-app.get('/*/manifest.json', extractPackages, respondIfExists('manifest.json'), extractAndBundle('manifest.json'));
+app.get('/v1/*/manifest.json', extractPackages, respondIfExists('manifest.json'), extractAndBundle('manifest.json'));
 
 console.log('Running webpack-dll-service version: ', require('../package.json').version);
 
