@@ -31,6 +31,8 @@ module.exports = {
     }
   },
   getBundle (packages) {
+    var requestQueue = this;
+
     return new Promise(function (resolve, reject) {
       var availablePackager = packagers.reduce(function (currentPackager, packager) {
         if (currentPackager) {
@@ -72,15 +74,11 @@ module.exports = {
       .catch(function (error) {
         availablePackager.isAvailable = false;
 
+        requestQueue.getBundle(packages)
+
         setTimeout(function () {
           availablePackager.isAvailable = true;
         }, 10000)
-
-        if (error.code === 'ESOCKETTIMEDOUT' || error.message === 'Service Unavailable') {
-          throw new Error(errors.PACKAGER_TIMEOUT);
-        }
-
-        throw error;
       })
   },
   has: function (id) {
