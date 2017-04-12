@@ -78,11 +78,11 @@ module.exports = {
 
         availablePackager.isAvailable = false;
 
-        requestQueue.getBundle(packages)
-
         setTimeout(function () {
           availablePackager.isAvailable = true;
         }, 10000)
+
+        return requestQueue.getBundle(packages)
       })
   },
   has: function (id) {
