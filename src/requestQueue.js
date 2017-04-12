@@ -72,6 +72,10 @@ module.exports = {
       })
     })
       .catch(function (availablePackager) {
+        if (availablePackager instanceof Error) {
+          throw availablePackager
+        }
+
         availablePackager.isAvailable = false;
 
         requestQueue.getBundle(packages)
