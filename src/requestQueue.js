@@ -70,6 +70,12 @@ module.exports = {
       })
     })
       .catch(function (error) {
+        availablePackager.isAvailable = false;
+
+        setTimeout(function () {
+          availablePackager.isAvailable = true;
+        }, 10000)
+
         if (error.code === 'ESOCKETTIMEDOUT' || error.message === 'Service Unavailable') {
           throw new Error(errors.PACKAGER_TIMEOUT);
         }
