@@ -59,7 +59,7 @@ module.exports = {
         availablePackager.isAvailable = true;
 
         if (err) {
-          reject(err);
+          reject(availablePackager);
 
           return;
         }
@@ -67,11 +67,11 @@ module.exports = {
         try {
           resolve(JSON.parse(body));
         } catch (e) {
-          reject(new Error(body));
+          reject(availablePackager);
         }
       })
     })
-      .catch(function (error) {
+      .catch(function (availablePackager) {
         availablePackager.isAvailable = false;
 
         requestQueue.getBundle(packages)
