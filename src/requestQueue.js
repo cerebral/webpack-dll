@@ -8,7 +8,8 @@ var errors = require('./errors');
 var packagers = config.packagerServiceUrls.map(function (packageServiceUrl) {
   return {
     url: packageServiceUrl,
-    isAvailable: true
+    isAvailable: true,
+    lastUsed: Date.now()
   }
 });
 
@@ -34,7 +35,15 @@ module.exports = {
     var requestQueue = this;
 
     return new Promise(function (resolve, reject) {
-      var availablePackager = packagers.reduce(function (currentPackager, packager) {
+      var availablePackager = packagers.sort(function (packagerA, packagerB) {
+        if (packagerA.lastUsed > packagerB.lastUsed) {
+          return 1;
+        } else if (packagerB.lastUsed < packagerB.lastUsed) {
+          return -1;
+        }
+
+        return 0;
+      }).reduce(function (currentPackager, packager) {
         if (currentPackager) {
           return currentPackager;
         }
@@ -49,6 +58,8 @@ module.exports = {
       if (!availablePackager) {
         throw new Error(errors.PACKAGER_NOT_AVAILABLE);
       }
+
+      availablePackager.lastUsed = Date.now();
 
       request({
         url: availablePackager.url + '/' + packages,
