@@ -50,40 +50,30 @@ module.exports = {
         throw new Error(errors.PACKAGER_NOT_AVAILABLE);
       }
 
-      availablePackager.isAvailable = false;
-
       request({
         url: availablePackager.url + '/' + packages,
         timeout: config.packageServiceTimeout
       }, function (err, response, body) {
-        availablePackager.isAvailable = true;
+        if (response.statusCode === 503) {
+          availablePackager.isAvailable = false;
 
-        if (err) {
-          reject(availablePackager);
+          resolve(requestQueue.getBundle(packages))
+        } else if (err) {
+          setTimeout(function () {
+            availablePackager.isAvailable = true;
+          }, 10000);
+          reject(err);
+        } else {
+          availablePackager.isAvailable = true;
 
-          return;
-        }
-
-        try {
-          resolve(JSON.parse(body));
-        } catch (e) {
-          reject(availablePackager);
+          try {
+            resolve(JSON.parse(body));
+          } catch (e) {
+            reject(e);
+          }
         }
       })
     })
-      .catch(function (availablePackager) {
-        if (availablePackager instanceof Error) {
-          throw availablePackager
-        }
-
-        availablePackager.isAvailable = false;
-
-        setTimeout(function () {
-          availablePackager.isAvailable = true;
-        }, 10000)
-
-        return requestQueue.getBundle(packages)
-      })
   },
   has: function (id) {
     return Boolean(queue[id]);
@@ -94,18 +84,20 @@ module.exports = {
   resolveFiles (id, bundle) {
     this.resolveManifest(id, bundle.manifest);
     this.resolveDll(id, bundle.dll);
-
-    delete queue[id];
   },
   resolveDll: function (id, content) {
     var requests = queue[id]['dll.js'];
 
     requests.forEach(utils.sendFile('dll.js', content))
+
+    queue[id]['dll.js'] = [];
   },
   resolveManifest: function (id, content) {
     var requests = queue[id]['manifest.json'];
 
     requests.forEach(utils.sendFile('manifest.json', content));
+
+    queue[id]['manifest.json'] = [];
   },
   reject: function (id, err) {
     var requests = queue[id]['dll.js'].concat(queue[id]['manifest.json']);
