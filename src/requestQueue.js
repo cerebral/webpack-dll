@@ -65,15 +65,13 @@ module.exports = {
         url: availablePackager.url + '/' + packages,
         timeout: config.packageServiceTimeout
       }, function (err, response, body) {
-        if (response && response.statusCode === 503) {
+        if (err || (response && response.statusCode !== 200)) {
+          console.log('PACKAGER ERROR - ' + (err ? err.message : body));
           availablePackager.isAvailable = false;
-
-          resolve(requestQueue.getBundle(packages))
-        } else if (err) {
           setTimeout(function () {
             availablePackager.isAvailable = true;
           }, 10000);
-          reject(err);
+          resolve(requestQueue.getBundle(packages))
         } else {
           availablePackager.isAvailable = true;
 
