@@ -65,7 +65,7 @@ module.exports = {
         url: availablePackager.url + '/' + packages,
         timeout: config.packageServiceTimeout
       }, function (err, response, body) {
-        if (response.statusCode === 503) {
+        if (response && response.statusCode === 503) {
           availablePackager.isAvailable = false;
 
           resolve(requestQueue.getBundle(packages))
