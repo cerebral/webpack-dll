@@ -70,11 +70,15 @@ module.exports = {
           resolve(requestQueue.getBundle(packages));
         } else if (err || (response && response.statusCode !== 200)) {
           console.log('PACKAGER ERROR - ' + (err ? err.message : body));
-          availablePackager.isAvailable = false;
-          setTimeout(function () {
-            availablePackager.isAvailable = true;
-          }, 10000);
-          resolve(requestQueue.getBundle(packages));
+          if (body === 'INVALID_VERSION') {
+            reject(new Error(body));
+          } else {
+            availablePackager.isAvailable = false;
+            setTimeout(function () {
+              availablePackager.isAvailable = true;
+            }, 10000);
+            resolve(requestQueue.getBundle(packages));
+          }
         } else {
           availablePackager.isAvailable = true;
 
