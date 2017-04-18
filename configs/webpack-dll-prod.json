@@ -8,7 +8,7 @@
     "http://45.32.65.145",
     "http://45.76.35.215"
   ],
-  "packageServiceTimeout": 20000,
+  "packageServiceTimeout": 90000,
   "packageServicesTimeout": 15000,
   "cleanQueueTimeout": 90000,
   "connectTimeout": 25000,

@@ -4,7 +4,7 @@
   "packagerServiceUrls": [
     "http://45.32.65.145"
   ],
-  "packageServiceTimeout": 20000,
+  "packageServiceTimeout": 90000,
   "packageServicesTimeout": 15000,
   "cleanQueueTimeout": 300000,
   "connectTimeout": 25000,
