@@ -87,7 +87,6 @@ function createSendUpdateTimeout () {
 }
 
 function sendUpdate () {
-  console.log('Sending update');
   expressWs.getWss().clients.forEach(function (client) {
     client.send(JSON.stringify(getStats()))
   })
