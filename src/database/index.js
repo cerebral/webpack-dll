@@ -18,6 +18,17 @@ module.exports = {
     return db.readFile(bundleName + '_' + fileName, res);
   },
   fileExists: function (bundleName, fileName) {
-    return db.fileExists(bundleName + '_' + fileName)
+    return db.fileExists(bundleName + '_' + fileName);
+  },
+  getStats: function () {
+    return db.find('stats');
+  },
+  updateStats: function (stats) {
+    return db.update('stats', {
+      name: 'total'
+    }, {
+      name: 'total',
+      stats: stats
+    });
   }
 }
