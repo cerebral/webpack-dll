@@ -32,14 +32,16 @@ module.exports = {
   },
   updatePackagersWithStats: function (stats) {
     packagers.forEach(function (packager) {
-      if (!stats[packager.url]) {
+      var packagerName = utils.getPackagerName(packager)
+
+      if (!stats[packagerName]) {
         return;
       }
 
-      packager.lastUsed = stats[packager.url].lastUsed;
-      packager.resolvedCount = stats[packager.url].resolvedCount;
-      packager.errorCount = stats[packager.url].errorCount;
-      packager.isBusyCount = stats[packager.url].isBusyCount;
+      packager.lastUsed = stats[packagerName].lastUsed;
+      packager.resolvedCount = stats[packagerName].resolvedCount;
+      packager.errorCount = stats[packagerName].errorCount;
+      packager.isBusyCount = stats[packagerName].isBusyCount;
     });
   },
   add: function (id, packages, file, res) {

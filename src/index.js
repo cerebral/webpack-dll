@@ -72,10 +72,26 @@ app.get('/:version(v1|v2)/*/manifest.json', extractPackages, respondIfExists('ma
 */
 function getStats () {
   return requestQueue.getPackagers().reduce(function (currentStats, packager) {
-    currentStats[packager.url] = packager;
+    currentStats[utils.getPackagerName(packager)] = packager;
 
     return currentStats;
   }, {});
+}
+
+var sendUpdateTimeout
+function createSendUpdateTimeout () {
+  clearTimeout(sendUpdateTimeout)
+  sendUpdateTimeout = setTimeout(function () {
+    sendUpdate()
+  }, 50000)
+}
+
+function sendUpdate () {
+  console.log('Sending update');
+  expressWs.getWss().clients.forEach(function (client) {
+    client.send(JSON.stringify(getStats()))
+  })
+  createSendUpdateTimeout()
 }
 
 setInterval(function () {
@@ -87,10 +103,10 @@ app.ws('/', function(ws, req) {
 });
 
 requestQueue.listenToPackageUpdates(function () {
-  expressWs.getWss().clients.forEach(function (client) {
-    client.send(JSON.stringify(getStats()))
-  })
+  sendUpdate()
 });
+
+createSendUpdateTimeout()
 
 console.log('Running webpack-dll-service version: ', require('../package.json').version);
 
