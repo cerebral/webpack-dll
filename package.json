@@ -4,6 +4,7 @@
   "description": "A service that converts a package into a DLL and manifest",
   "main": "test.js",
   "scripts": {
+    "heroku-postbuild": "next build src/homepage",
     "start": "WEBPACK_DLL_ENV=webpack-dll-dev DEBUG=true node src/index",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -18,9 +19,12 @@
     "mongodb": "^2.2.25",
     "node-pre-gyp": "^0.6.23",
     "nopt": "^3.0.6",
+    "next": "^2.2.0",
     "npm-registry": "^0.1.13",
     "npm-registry-client": "^7.0.9",
     "rc": "^1.1.6",
+    "react": "^15.5.4",
+    "react-dom": "^15.5.4",
     "recursive": "0.0.2",
     "recursive-readdir": "^1.3.0",
     "rmdir": "^1.2.0",
