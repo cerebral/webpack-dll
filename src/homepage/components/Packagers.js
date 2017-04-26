@@ -48,6 +48,7 @@ export default class Packagers extends React.PureComponent {
           display: 'flex',
           justifyContent: 'space-around',
           marginBottom: '5rem',
+          flexWrap: 'wrap',
         }}
       >
         {Object.keys(data).sort().map((packagerIp, index) => {
