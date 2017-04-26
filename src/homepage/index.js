@@ -1,9 +1,9 @@
 const next = require('next');
 const LRUCache = require('lru-cache');
 
-const debug = process.env.DEBUG === true;
+const DEBUG = process.env.DEBUG === 'true';
 
-const app = next({ dir: __dirname, dev: debug });
+const app = next({ dir: __dirname, dev: DEBUG });
 const handle = app.getRequestHandler();
 
 const ssrCache = new LRUCache({
@@ -15,7 +15,7 @@ const renderAndCache = app => (req, res, pagePath, queryParams) => {
   const key = getCacheKey(req);
 
   // If we have a page in the cache, let's serve it
-  if (ssrCache.has(key)) {
+  if (!DEBUG && ssrCache.has(key)) {
     console.log(`CACHE HIT: ${key}`);
     res.send(ssrCache.get(key));
     return;

@@ -63,7 +63,7 @@ export default ({
         Succesful bundles: <strong>{resolvedCount}</strong>
       </div>
       <div className="date">
-        Not reached: <strong>{errorCount}</strong>
+        Busy: <strong>{errorCount}</strong>
       </div>
     </div>
   );
