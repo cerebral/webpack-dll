@@ -1,7 +1,6 @@
 import React from 'react';
 import Answer from '../components/Answer';
 import Packagers from '../components/Packagers';
-import { injectGlobal } from 'styled-components';
 
 export default () => (
   <div>
