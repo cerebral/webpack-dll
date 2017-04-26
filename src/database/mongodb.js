@@ -17,6 +17,30 @@ module.exports = {
       });
     })
   },
+  find: function (collection, query) {
+    return new Promise(function (resolve, reject) {
+      db.collection(collection).find(query || {}).toArray(function (err, docs) {
+        if (err) {
+          reject(err);
+          return;
+        }
+        resolve(docs);
+      })
+    })
+  },
+  update: function (collection, query, doc) {
+    return new Promise(function (resolve, reject) {
+      db.collection(collection).update(query, doc, {
+        upsert: true
+      }, function (err) {
+        if (err) {
+          reject(err);
+          return;
+        }
+        resolve();
+      })
+    })
+  },
   writeFile: function (fileName, readStream) {
     return new Promise(function (resolve, reject) {
       var writeStream = gfs.createWriteStream({

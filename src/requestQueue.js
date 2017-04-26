@@ -5,15 +5,45 @@ var utils = require('./utils');
 var request = require('request');
 var errors = require('./errors');
 
+var packagerUpdateListeners = [];
 var packagers = config.packagerServiceUrls.map(function (packageServiceUrl) {
   return {
     url: packageServiceUrl,
     isAvailable: true,
-    lastUsed: Date.now()
+    lastUsed: Date.now(),
+    resolvedCount: 0,
+    errorCount: 0,
+    isBusyCount: 0
   }
 });
 
+function emitPackagersUpdate () {
+  packagerUpdateListeners.forEach(function (cb) {
+    cb();
+  });
+}
+
 module.exports = {
+  listenToPackageUpdates: function (cb) {
+    packagerUpdateListeners.push(cb);
+  },
+  getPackagers: function () {
+    return packagers;
+  },
+  updatePackagersWithStats: function (stats) {
+    packagers.forEach(function (packager) {
+      var packagerName = utils.getPackagerName(packager)
+
+      if (!stats[packagerName]) {
+        return;
+      }
+
+      packager.lastUsed = stats[packagerName].lastUsed;
+      packager.resolvedCount = stats[packagerName].resolvedCount;
+      packager.errorCount = stats[packagerName].errorCount;
+      packager.isBusyCount = stats[packagerName].isBusyCount;
+    });
+  },
   add: function (id, packages, file, res) {
     if (queue[id])  {
       queue[id][file].push(res);
@@ -60,6 +90,8 @@ module.exports = {
       }
 
       availablePackager.lastUsed = Date.now();
+      availablePackager.isAvailable = false;
+      emitPackagersUpdate();
 
       request({
         url: availablePackager.url + '/' + packages,
@@ -67,6 +99,7 @@ module.exports = {
       }, function (err, response, body) {
         if (response && response.statusCode === 503) {
           availablePackager.isAvailable = false;
+          availablePackager.isBusyCount++;
           resolve(requestQueue.getBundle(packages));
         } else if (err || (response && response.statusCode !== 200)) {
           console.log('PACKAGER ERROR - ' + (err ? err.message : body));
@@ -79,12 +112,18 @@ module.exports = {
             }, 10000);
             resolve(requestQueue.getBundle(packages));
           }
+          availablePackager.errorCount++;
+          emitPackagersUpdate();
         } else {
           availablePackager.isAvailable = true;
 
           try {
             resolve(JSON.parse(body));
+            availablePackager.resolvedCount++;
+            emitPackagersUpdate();
           } catch (e) {
+            availablePackager.errorCount++;
+            emitPackagersUpdate();
             reject(e);
           }
         }

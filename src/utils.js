@@ -28,5 +28,8 @@ module.exports = {
         res.send(content);
       } catch (e) {}
     }
+  },
+  getPackagerName: function (packager) {
+    return packager.url.replace('http://', '').replace(/\./g, '')
   }
 };

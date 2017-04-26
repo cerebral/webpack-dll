@@ -10,12 +10,19 @@ var fs = require('fs');
 var database = require('./database');
 var utils = require('./utils');
 var homepage = require('./homepage');
+var requestQueue = require('./requestQueue');
+
 var dbInstance = null;
+var expressWs = require('express-ws')(app);
 
 database.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/webpack-dll')
   .then(function (connectedDb) {
     dbInstance = connectedDb
     console.log('Connected to database');
+    return database.getStats();
+  })
+  .then(function (stats) {
+    requestQueue.updatePackagersWithStats(stats[0] ? stats[0].stats : {});
   })
   .catch(function (error) {
     console.log(error);
@@ -68,10 +75,52 @@ homepage.load().then((zeit) => {
 app.get('/query/:packageName', cors({
   origin: config.clientQueryOrigin
 }), queryPackage);
-app.get('/v1/*/dll.js', extractPackages, cors({
+
+app.get('/:version(v1|v2)/*/dll.js', extractPackages, cors({
   origin: config.clientDllOrigin
 }), respondIfExists('dll.js'), extractAndBundle('dll.js'));
-app.get('/v1/*/manifest.json', extractPackages, respondIfExists('manifest.json'), extractAndBundle('manifest.json'));
+
+app.get('/:version(v1|v2)/*/manifest.json', extractPackages, respondIfExists('manifest.json'), extractAndBundle('manifest.json'));
+
+/*
+  Stats
+*/
+function getStats () {
+  return requestQueue.getPackagers().reduce(function (currentStats, packager) {
+    currentStats[utils.getPackagerName(packager)] = packager;
+
+    return currentStats;
+  }, {});
+}
+
+var sendUpdateTimeout
+function createSendUpdateTimeout () {
+  clearTimeout(sendUpdateTimeout)
+  sendUpdateTimeout = setTimeout(function () {
+    sendUpdate()
+  }, 50000)
+}
+
+function sendUpdate () {
+  expressWs.getWss().clients.forEach(function (client) {
+    client.send(JSON.stringify(getStats()))
+  })
+  createSendUpdateTimeout()
+}
+
+setInterval(function () {
+  database.updateStats(getStats());
+}, config.statsUpdateInterval);
+
+app.ws('/', function(ws, req) {
+  ws.send(JSON.stringify(getStats()));
+});
+
+requestQueue.listenToPackageUpdates(function () {
+  sendUpdate()
+});
+
+createSendUpdateTimeout()
 
 
 // Next
