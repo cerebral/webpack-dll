@@ -37,6 +37,7 @@ export default ({
         border-radius: 2px;
         width: 200px;
         height: 100px;
+        margin: 0.5rem;
 
         display: flex;
         flex-direction: column;

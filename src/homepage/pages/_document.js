@@ -12,6 +12,7 @@ export default class MyDocument extends Document {
     return (
       <html>
         <Head>
+          <meta name="viewport" content="width=device-width, initial-scale=1" />
           <title>NPM Packager Service</title>
           <link
             href="https://fonts.googleapis.com/css?family=Open+Sans:300,400"
@@ -36,6 +37,13 @@ export default class MyDocument extends Document {
               justify-content: center;
 
               line-height: 1.8;
+            }
+
+            @media screen and (max-width: 800px) {
+                html {
+                  display: block;
+                  padding: 16px;
+                }
             }
 
             body {

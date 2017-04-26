@@ -14,6 +14,12 @@ export default () => (
         margin-bottom: 0;
       }
 
+      @media screen and (max-width: 800px) {
+        h1 {
+          margin-top: 1rem;
+        }
+      }
+
       h2 {
         text-align: center;
         font-weight: 300;
