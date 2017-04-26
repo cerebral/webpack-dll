@@ -5,7 +5,7 @@
   "main": "test.js",
   "scripts": {
     "build": "next build src/homepage",
-    "start": "WEBPACK_DLL_ENV=webpack-dll-dev DEBUG=true npm run build && node src/index",
+    "start": "npm run build && WEBPACK_DLL_ENV=webpack-dll-dev DEBUG=true node src/index",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
