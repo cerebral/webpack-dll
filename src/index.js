@@ -62,14 +62,14 @@ function respondIfExists (fileName) {
 // Create mocked handlers, because express needs to fire instantly or Heroku can give ping timeout, as
 // express server is not up and running fast enough
 var renderPage = renderUnknownPage = function(req, res) {
-  res.send('Waiting for zeit...');
+  res.send('\"Waiting for zeit...\"');
 }
 
 // Replace mocked handlers and bind to zeit argument, seems like "handle" needs to know
 // its context, probably does a "this" inside there somewhere
 homepage.load().then((zeit) => {
   renderPage = zeit.render.bind(zeit)
-  renderUnknownPage = zeith.handle.bind(zeit)
+  renderUnknownPage = zeit.handle.bind(zeit)
 });
 
 app.get('/query/:packageName', cors({
