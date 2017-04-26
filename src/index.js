@@ -62,6 +62,7 @@ function respondIfExists (fileName) {
 // Create mocked handlers, because express needs to fire instantly or Heroku can give ping timeout, as
 // express server is not up and running fast enough
 var renderPage = renderUnknownPage = function(req, res) {
+  console.log('waiting for zeit');
   res.send('\"Waiting for zeit...\"');
 }
 
@@ -128,7 +129,7 @@ app.get('/', (req, res) => {
   renderPage(req, res, '/');
 });
 
-app.get('*',  renderUnknownPage);
+app.get('*', (req, res) => renderUnknownPage(req, res));
 
 var server = app.listen(process.env.NODE_ENV === 'production' ? process.env.PORT : 5000);
 
