@@ -98,8 +98,12 @@ module.exports = {
         timeout: config.packageServiceTimeout
       }, function (err, response, body) {
         if (response && response.statusCode === 503) {
+          console.log('PACKAGER 503 ERROR - ' + (err ? err.message : body));
           availablePackager.isAvailable = false;
           availablePackager.isBusyCount++;
+          setTimeout(function () {
+            availablePackager.isAvailable = true;
+          }, 60000);
           resolve(requestQueue.getBundle(packages));
         } else if (err || (response && response.statusCode !== 200)) {
           console.log('PACKAGER ERROR - ' + (err ? err.message : body));
