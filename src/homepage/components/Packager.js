@@ -37,6 +37,7 @@ export default ({
         border-radius: 2px;
         width: 200px;
         height: 100px;
+        margin: 0.5rem;
 
         display: flex;
         flex-direction: column;
@@ -63,7 +64,7 @@ export default ({
         Succesful bundles: <strong>{resolvedCount}</strong>
       </div>
       <div className="date">
-        Not reached: <strong>{errorCount}</strong>
+        Busy: <strong>{errorCount}</strong>
       </div>
     </div>
   );

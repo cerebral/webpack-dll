@@ -14,6 +14,12 @@ export default () => (
         margin-bottom: 0;
       }
 
+      @media screen and (max-width: 800px) {
+        h1 {
+          margin-top: 1rem;
+        }
+      }
+
       h2 {
         text-align: center;
         font-weight: 300;
@@ -26,6 +32,7 @@ export default () => (
     `}</style>
     <h1>NPM Packager Service</h1>
     <h2>Create a consumable script from any combination of dependencies</h2>
+    <Packagers />
 
     <Answer question="What is this?">
       This is a package bundler, it builds a UMD build of a combination of packages which you can use as DLL plugin or as a
@@ -114,10 +121,5 @@ export default () => (
       </a>
       .
     </Answer>
-
-    <h2 style={{ marginBottom: '1rem', marginTop: '4rem' }}>
-      Packager Status
-    </h2>
-    <Packagers />
   </div>
 );

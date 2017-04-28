@@ -4,7 +4,8 @@
   "description": "A service that converts a package into a DLL and manifest",
   "main": "test.js",
   "scripts": {
-    "heroku-postbuild": "next build src/homepage",
+    "heroku-postbuild": "npm run build",
+    "build": "next build src/homepage",
     "start": "WEBPACK_DLL_ENV=webpack-dll-dev DEBUG=true node src/index",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
