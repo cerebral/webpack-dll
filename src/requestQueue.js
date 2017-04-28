@@ -13,7 +13,8 @@ var packagers = config.packagerServiceUrls.map(function (packageServiceUrl) {
     lastUsed: Date.now(),
     resolvedCount: 0,
     errorCount: 0,
-    isBusyCount: 0
+    isBusyCount: 0,
+    timeoutCount: 0
   }
 });
 
@@ -39,9 +40,10 @@ module.exports = {
       }
 
       packager.lastUsed = stats[packagerName].lastUsed;
-      packager.resolvedCount = stats[packagerName].resolvedCount;
-      packager.errorCount = stats[packagerName].errorCount;
-      packager.isBusyCount = stats[packagerName].isBusyCount;
+      packager.resolvedCount = stats[packagerName].resolvedCount || 0;
+      packager.errorCount = stats[packagerName].errorCount || 0;
+      packager.isBusyCount = stats[packagerName].isBusyCount || 0;
+      packager.timeoutCount = stats[packagerName].timeoutCount || 0;
     });
   },
   add: function (id, packages, file, res) {
@@ -100,7 +102,7 @@ module.exports = {
         if (response && response.statusCode === 503) {
           console.log('PACKAGER 503 ERROR - ' + (err ? err.message : body));
           availablePackager.isAvailable = false;
-          availablePackager.isBusyCount++;
+          availablePackager.timeoutCount++;
           setTimeout(function () {
             availablePackager.isAvailable = true;
           }, 60000);
