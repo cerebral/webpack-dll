@@ -110,6 +110,7 @@ module.exports = {
         } else if (err || (response && response.statusCode !== 200)) {
           console.log('PACKAGER ERROR - ' + (err ? err.message : body));
           if (body === 'INVALID_VERSION') {
+            availablePackager.isAvailable = true;
             reject(new Error(body));
           } else {
             availablePackager.isAvailable = false;
