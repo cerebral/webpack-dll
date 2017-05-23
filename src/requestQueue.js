@@ -4,6 +4,7 @@ var queue = {};
 var utils = require('./utils');
 var request = require('request');
 var errors = require('./errors');
+var createTimeoutRequest = require('./createTimeoutRequest');
 
 var packagerUpdateListeners = [];
 var packagers = config.packagerServiceUrls.map(function (packageServiceUrl) {
@@ -48,13 +49,18 @@ module.exports = {
   },
   add: function (id, packages, file, res) {
     if (queue[id])  {
-      queue[id][file].push(res);
+      const timeoutRequest = createTimeoutRequest(res, queue[id][file])
+
+      queue[id][file].push(timeoutRequest);
     } else {
+
       queue[id] = {'dll.js': [], 'manifest.json': [], bundle: null};
 
-      queue[id][file].push(res);
+      const timeoutRequest = createTimeoutRequest(res, queue[id][file])
+      queue[id][file].push(timeoutRequest);
 
       var requeustQueue = this;
+
       return this.getBundle(packages)
         .then(function (bundle) {
           requeustQueue.resolveFiles(id, bundle);
@@ -103,6 +109,7 @@ module.exports = {
           console.log('PACKAGER 503 ERROR - ' + (err ? err.message : body));
           availablePackager.isAvailable = false;
           availablePackager.timeoutCount++;
+          reject(new Error(body));
           setTimeout(function () {
             availablePackager.isAvailable = true;
           }, 60000);
@@ -164,9 +171,9 @@ module.exports = {
   reject: function (id, err) {
     var requests = queue[id]['dll.js'].concat(queue[id]['manifest.json']);
 
-    requests.forEach(function (res) {
+    requests.forEach(function (request) {
       try {
-        res.status(500).send(err.message);
+        request.send(500, err.message);
       } catch (e) {}
     })
 

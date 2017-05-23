@@ -19,13 +19,13 @@ module.exports = {
     var contentLength = content.length;
 
 
-    return function (res) {
-      res.setHeader('Cache-Control', 'public, max-age=' + config.cacheMaxAge);
-      res.setHeader('Content-Type', contentType);
-      res.setHeader('Content-Length', contentLength);
-
+    return function (request) {
       try {
-        res.send(content);
+        request.send(200, content, {
+          'Cache-Control': 'public, max-age=' + config.cacheMaxAge,
+          'Content-Type': contentType,
+          'Content-Length': contentLength
+        });
       } catch (e) {}
     }
   },

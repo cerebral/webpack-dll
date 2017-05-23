@@ -133,8 +133,6 @@ app.get('*', (req, res) => renderUnknownPage(req, res));
 
 var server = app.listen(process.env.NODE_ENV === 'production' ? process.env.PORT : 5000);
 
-server.timeout = config.connectTimeout;
-
 process.on('SIGTERM', function () {
   dbInstance.close();
   server.close(function () {
