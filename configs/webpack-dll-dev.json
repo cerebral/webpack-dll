@@ -4,10 +4,9 @@
   "packagerServiceUrls": [
     "http://localhost:5500"
   ],
-  "packageServiceTimeout": 90000,
-  "packageServicesTimeout": 15000,
+  "packageServiceTimeout": 180000,
   "cleanQueueTimeout": 300000,
-  "connectTimeout": 30000,
+  "connectTimeout": 20000,
   "cacheMaxAge": 10,
   "statsUpdateInterval": 10000
 }

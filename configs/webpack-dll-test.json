@@ -4,10 +4,9 @@
   "packagerServiceUrls": [
     "http://45.32.65.145"
   ],
-  "packageServiceTimeout": 90000,
-  "packageServicesTimeout": 15000,
+  "packageServiceTimeout": 180000,
   "cleanQueueTimeout": 300000,
-  "connectTimeout": 25000,
+  "connectTimeout": 20000,
   "cacheMaxAge": 30,
   "statsUpdateInterval": 300000
 }

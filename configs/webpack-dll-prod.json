@@ -10,10 +10,9 @@
     "http://108.61.209.149",
     "http://45.32.150.187"
   ],
-  "packageServiceTimeout": 90000,
-  "packageServicesTimeout": 15000,
+  "packageServiceTimeout": 180000,
   "cleanQueueTimeout": 90000,
-  "connectTimeout": 30000,
+  "connectTimeout": 20000,
   "cacheMaxAge": 31557600,
   "statsUpdateInterval": 300000
 }
