@@ -77,11 +77,11 @@ app.get('/query/:packageName', cors({
   origin: config.clientQueryOrigin
 }), queryPackage);
 
-app.get('/:version(v1|v2|v3)/*/dll.js', extractPackages, cors({
+app.get('/:version(v1|v2|v3|v4)/*/dll.js', extractPackages, cors({
   origin: config.clientDllOrigin
 }), respondIfExists('dll.js'), extractAndBundle('dll.js'));
 
-app.get('/:version(v1|v2|v3)/*/manifest.json', extractPackages, respondIfExists('manifest.json'), extractAndBundle('manifest.json'));
+app.get('/:version(v1|v2|v3|v4)/*/manifest.json', extractPackages, respondIfExists('manifest.json'), extractAndBundle('manifest.json'));
 
 /*
   Stats
