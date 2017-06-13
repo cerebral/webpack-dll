@@ -1,6 +1,7 @@
-const request = require('request')
+const request = require('request');
+const registryUrl = require('registry-url');
 
-module.exports = function queryPackage (req, res) {
+module.exports = function queryPackage(req, res) {
   var nameSplit = req.params.packageName.split('@');
 
   // If leading @
@@ -13,8 +14,8 @@ module.exports = function queryPackage (req, res) {
   var version = nameSplit[1];
 
   new Promise(function (resolve, reject) {
-    request('http://registry.npmjs.org/' + name, function (err, response, body) {
-      if (err || response.statusCode < 200  || response.statusCode >= 300) {
+    request(registryUrl() + name, function (err, response, body) {
+      if (err || response.statusCode < 200 || response.statusCode >= 300) {
         return res.sendStatus(404);
       }
 
