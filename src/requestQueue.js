@@ -54,7 +54,7 @@ module.exports = {
       queue[id][file].push(timeoutRequest);
     } else {
 
-      queue[id] = {'dll.js': [], 'manifest.json': [], bundle: null};
+      queue[id] = {packages: packages, 'dll.js': [], 'manifest.json': [], bundle: null};
 
       const timeoutRequest = createTimeoutRequest(res, queue[id][file])
       queue[id][file].push(timeoutRequest);
@@ -62,11 +62,6 @@ module.exports = {
       var requeustQueue = this;
 
       return this.getBundle(packages)
-        .then(function (bundle) {
-          requeustQueue.resolveFiles(id, bundle);
-
-          return bundle;
-        })
     }
   },
   getBundle (packages) {
@@ -113,7 +108,6 @@ module.exports = {
           setTimeout(function () {
             availablePackager.isAvailable = true;
           }, 60000);
-          resolve(requestQueue.getBundle(packages));
         } else if (err || (response && response.statusCode !== 200)) {
           console.log('PACKAGER ERROR - ' + (err ? err.message : body));
           if (body === 'INVALID_VERSION') {
@@ -151,6 +145,7 @@ module.exports = {
     delete queue[id];
   },
   resolveFiles (id, bundle) {
+    console.log('# RESOLVING FILES - ', queue[id].packages, bundle.manifest.length, bundle.dll.length);
     this.resolveManifest(id, bundle.manifest);
     this.resolveDll(id, bundle.dll);
   },
@@ -171,6 +166,7 @@ module.exports = {
   reject: function (id, err) {
     var requests = queue[id]['dll.js'].concat(queue[id]['manifest.json']);
 
+    console.error(err);
     requests.forEach(function (request) {
       try {
         request.send(500, err.message);
