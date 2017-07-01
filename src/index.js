@@ -46,8 +46,7 @@ function respondIfExists (fileName) {
         if (exists) {
           database.getFile(vendorsBundleName, fileName, res)
             .then(function () {
-              console.log('# DATABASE RESOLVE', req.params.packages, res.statusCode);
-              res.end();
+              console.log('# DATABASE RESOLVE', fileName, req.params.packages, res.statusCode);
             })
             .catch(function (err) {
               console.log('Could not get file ' + fileName + ' from database');

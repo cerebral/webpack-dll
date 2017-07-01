@@ -19,10 +19,12 @@ module.exports = function extractAndBundle (file) {
           database.saveFile(vendorsBundleName, 'dll.js', bundle.dll),
           database.saveFile(vendorsBundleName, 'manifest.json', bundle.manifest)
         ])
-        .catch(function (err) {
-          console.log('ERROR - Could not write to Database', err);
-        })
           .then(function () {
+            return bundle
+          })
+          .catch(function (err) {
+            console.log('ERROR - Could not write to Database', err);
+
             return bundle
           })
       })
