@@ -6,7 +6,9 @@
   "clientQueryOrigin": "https://www.webpackbin.com",
   "packagerServiceUrls": [
     "http://45.32.65.145",
-    "http://45.76.35.215"
+    "http://45.76.35.215",
+    "http://108.61.209.149",
+    "http://45.32.150.187"
   ],
   "packageServiceTimeout": 180000,
   "cleanQueueTimeout": 90000,
