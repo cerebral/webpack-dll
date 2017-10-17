@@ -13,6 +13,6 @@
   "packageServiceTimeout": 180000,
   "cleanQueueTimeout": 90000,
   "connectTimeout": 20000,
-  "cacheMaxAge": 31557600,
+  "cacheMaxAge": 86400,
   "statsUpdateInterval": 300000
 }
